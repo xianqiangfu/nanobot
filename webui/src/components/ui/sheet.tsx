@@ -5,6 +5,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+// Sheet 是基于 Radix Dialog 的侧边抽屉组件
+// 使用 Dialog 原语以获得可访问性支持，同时添加滑入动画
 const Sheet = DialogPrimitive.Root;
 const SheetTrigger = DialogPrimitive.Trigger;
 const SheetClose = DialogPrimitive.Close;
@@ -27,6 +29,7 @@ const SheetOverlay = React.forwardRef<
 ));
 SheetOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
+// 定义不同方向的滑入动画和定位
 const sheetVariants = cva(
   "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out",
   {
@@ -62,6 +65,7 @@ interface SheetContentProps
   showCloseButton?: boolean;
 }
 
+// Sheet 内容容器，根据 side 属性决定从哪个方向滑入
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   SheetContentProps
@@ -90,6 +94,7 @@ const SheetContent = React.forwardRef<
 ));
 SheetContent.displayName = DialogPrimitive.Content.displayName;
 
+// Sheet 标题区域，提供一致的布局
 const SheetHeader = ({
   className,
   ...props

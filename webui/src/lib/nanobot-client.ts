@@ -6,8 +6,8 @@ import type {
   OutboundMedia,
 } from "./types";
 
-/** WebSocket readyState constants, referenced by value to stay portable
- * across runtimes that don't expose a global ``WebSocket`` (tests, SSR). */
+/** WebSocket readyState 常量，按值引用以便在不暴露
+ * 全局 ``WebSocket`` 的运行时（测试、SSR）中保持可移植性。 */
 const WS_OPEN = 1;
 const WS_CLOSING = 2;
 
@@ -17,7 +17,7 @@ type StatusHandler = (status: ConnectionStatus) => void;
 type RuntimeModelHandler = (modelName: string | null, modelPreset?: string | null) => void;
 type SessionUpdateHandler = (chatId: string) => void;
 
-/** Structured connection-level errors surfaced to the UI.
+/** 暴露给 UI 的结构化连接层错误。
  *
  * These are *not* InboundEvent errors from the server application layer —
  * those arrive as ``{event: "error"}`` messages via ``onChat``. These are
@@ -51,7 +51,7 @@ export interface NanobotClientOptions {
 }
 
 /**
- * Singleton WebSocket client that multiplexes chat streams.
+ * 多路复用聊天流单例 WebSocket 客户端。
  *
  * One socket carries many chat_ids: the server tags every outbound event with
  * ``chat_id``, and this class fans those events out to handlers registered
@@ -133,7 +133,7 @@ export class NanobotClient {
     };
   }
 
-  /** Subscribe to events for a given chat_id. Auto-attaches on the next open. */
+  /** 订阅给定 chat_id 的事件。下次打开时自动附加。 */
   onChat(chatId: string, handler: EventHandler): Unsubscribe {
     let handlers = this.chatHandlers.get(chatId);
     if (!handlers) {
@@ -178,7 +178,7 @@ export class NanobotClient {
     this.setStatus("closed");
   }
 
-  /** Ask the server to provision a new chat_id; resolves with the assigned id. */
+  /** 要求服务器配置新的 chat_id；使用分配的 id 解析。 */
   newChat(timeoutMs: number = 5_000): Promise<string> {
     if (this.pendingNewChat) {
       return Promise.reject(new Error("newChat already in flight"));
@@ -333,7 +333,7 @@ export class NanobotClient {
   private scheduleReconnect(): void {
     this.setStatus("reconnecting");
     const attempt = this.reconnectAttempts++;
-    // Exponential backoff: 0.5s, 1s, 2s, 4s, capped.
+    // 指数退避：0.5s, 1s, 2s, 4s，上限。
     const delay = Math.min(500 * 2 ** attempt, this.maxBackoffMs);
     this.reconnectTimer = setTimeout(async () => {
       this.reconnectTimer = null;

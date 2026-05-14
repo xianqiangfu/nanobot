@@ -1,5 +1,6 @@
 import type { UIMediaAttachment, UIMediaKind } from "@/lib/types";
 
+// 图片扩展名白名单
 const IMAGE_EXTENSIONS = new Set([
   ".png",
   ".jpg",
@@ -12,6 +13,7 @@ const IMAGE_EXTENSIONS = new Set([
   ".tiff",
 ]);
 
+// 视频扩展名白名单
 const VIDEO_EXTENSIONS = new Set([
   ".mp4",
   ".webm",

@@ -25,6 +25,7 @@ interface SidebarProps {
   onCollapse: () => void;
 }
 
+// 侧边栏：显示聊天列表、搜索、创建新会话和设置入口
 export function Sidebar(props: SidebarProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");

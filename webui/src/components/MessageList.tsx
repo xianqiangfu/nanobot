@@ -14,10 +14,9 @@ interface MessageListProps {
 const NEAR_BOTTOM_PX = 48;
 
 /**
- * Scrollable message log. Auto-sticks to the bottom as new content arrives,
- * but only when the user was already at the bottom — preserving scroll
- * position when they've scrolled up to read earlier turns. A floating
- * "scroll to bottom" button appears whenever we're detached from the bottom.
+ * 可滚动消息日志。当新内容到达时自动粘附到底部，
+ * 但仅当用户已经在底部时 — 当他们向上滚动阅读早期回合时保留滚动位置。
+ * 当我们脱离底部时会出现一个浮动的"滚动到底部"按钮。
  */
 export function MessageList({ messages, isStreaming }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);

@@ -9,15 +9,14 @@ import type { ChatSummary } from "@/lib/types";
 
 interface ChatPaneProps {
   session: ChatSummary | null;
-  /** Provision a new chat and mark it active. Returns the new chat_id or null. */
+  /** 配置新聊天并将其标记为活动。返回新的 chat_id 或 null。 */
   onNewChat: () => Promise<string | null>;
 }
 
 /**
- * The chat surface: persisted history on top, live stream below, composer
- * pinned at the bottom. When no session is active we render a centered
- * welcome card with a fully-functional composer — typing a first message
- * quietly provisions a new chat and routes the message through.
+ * 聊天界面：顶部是持久化历史记录，底部是实时流和固定在底部的编辑器。
+ * 当没有活动会话时，我们渲染一个居中的欢迎卡片，带有完全功能的编辑器
+ * — 输入第一条消息会安静地配置新聊天并将消息路由到其中。
  */
 export function ChatPane({ session, onNewChat }: ChatPaneProps) {
   const chatId = session?.chatId ?? null;
@@ -39,8 +38,8 @@ export function ChatPane({ session, onNewChat }: ChatPaneProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, chatId, historical]);
 
-  // Once a session becomes active, flush any first-message stashed from the
-  // welcome composer so the user's keystroke "just sends".
+  // 一旦会话变为活动状态，刷新欢迎编辑器中暂存的任何第一条消息，
+  // 以便用户的按键"直接发送"。
   useEffect(() => {
     if (!chatId) return;
     const pending = pendingFirstRef.current;

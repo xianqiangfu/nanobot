@@ -13,9 +13,8 @@ interface ComposerProps {
 }
 
 /**
- * Rounded, shadowed composer with an embedded send button — modeled after the
- * agent-chat-ui input: a single surface that looks like one interactive unit
- * rather than a textarea + button pair.
+ * 圆形、带阴影的编辑器，带有嵌入的发送按钮 — 基于编辑器输入：
+ * 一个看起来像一个交互单元而不是 textarea + 按钮对的单个表面。
  */
 export function Composer({
   onSend,

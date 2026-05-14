@@ -40,8 +40,8 @@ import type { SendImage, SendOptions } from "@/hooks/useNanobotStream";
 import type { SlashCommand } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-/** ``<input accept>``: aligned with the server's MIME whitelist. SVG is
- * deliberately excluded to avoid an embedded-script XSS surface. */
+/** ``<input accept>``: 与服务器的 MIME 白名单对齐。
+ * 故意排除 SVG 以避免嵌入式脚本的 XSS 漏洞。 */
 const ACCEPT_ATTR = "image/png,image/jpeg,image/webp,image/gif";
 
 function formatBytes(n: number): string {

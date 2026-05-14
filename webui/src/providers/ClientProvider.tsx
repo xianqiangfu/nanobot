@@ -2,6 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 
 import type { NanobotClient } from "@/lib/nanobot-client";
 
+// WebSocket 客户端的 React Context，让任何组件都可以访问
 interface ClientContextValue {
   client: NanobotClient;
   token: string;

@@ -13,6 +13,7 @@ interface ThreadHeaderProps {
   minimal?: boolean;
 }
 
+// 线程头部组件，显示标题、侧边栏切换和主题切换按钮
 export function ThreadHeader({
   title,
   onToggleSidebar,

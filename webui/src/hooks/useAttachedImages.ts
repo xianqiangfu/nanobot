@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { encodeImage, type EncodeFailure } from "@/lib/imageEncode";
 
-/** Lifecycle stages of one attachment:
+/** 一个附件的生命周期阶段：
  *
  * - ``encoding``  — posted to the Worker; chip shows a spinner
  * - ``ready``     — ``dataUrl`` available; safe to submit
@@ -27,7 +27,7 @@ export interface AttachedImage {
   error?: AttachmentError;
 }
 
-/** Machine-readable rejection reasons surfaced as inline chip errors.
+/** 机器可读的拒绝原因，显示为内联芯片错误。
  *
  * Callers localize these via the ``composer.imageRejected.*`` i18n table. */
 export type AttachmentError =
@@ -72,25 +72,24 @@ function mapEncodeFailure(reason: EncodeFailure["reason"]): AttachmentError {
 
 export interface UseAttachedImagesApi {
   images: AttachedImage[];
-  /** Enqueue new files. Returns the list of rejected files so the caller can
-   * surface inline errors. Files rejected client-side (wrong MIME, limit) are
-   * *not* added to ``images`` — only recoverable encoding failures show up as
-   * error chips. */
+  /** 入队新文件。返回被拒绝的文件列表，以便调用者显示内联错误。
+   * 客户端拒绝的文件（错误的 MIME、限制）*不会*添加到 ``images`` 中
+   * — 只有可恢复的编码错误才会显示为错误芯片。 */
   enqueue: (files: Iterable<File>) => {
     rejected: Array<{ file: File; reason: AttachmentError }>;
   };
   remove: (id: string) => { nextFocusId: string | null };
-  /** Revoke every staged blob URL and drop all attachments. Called after a
-   * successful submit — the optimistic bubble holds onto an independent
-   * ``data:`` URL so tearing down blob previews here is safe. */
+  /** 撤销所有暂存的 blob URL 并删除所有附件。在成功提交后调用
+   * — 乐观气泡保持独立的 ``data:`` URL，因此在这里删除 blob
+   * 预览是安全的。 */
   clear: () => void;
-  /** ``true`` when at least one image is still encoding — Send should wait. */
+  /** 当至少有一张图片仍在编码时为 ``true`` — Send 应该等待。 */
   encoding: boolean;
-  /** ``true`` when we've hit ``MAX_IMAGES_PER_MESSAGE``. */
+  /** 当我们达到 ``MAX_IMAGES_PER_MESSAGE`` 时为 ``true``。 */
   full: boolean;
 }
 
-/** Manage the lifecycle of images attached to the Composer.
+/** 管理附加到编辑器的图片的生命周期。
  *
  * Responsibilities in one place:
  *   - validation (MIME whitelist, count cap)

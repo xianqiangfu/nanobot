@@ -32,6 +32,7 @@ function reasoningFromHistory(message: HistoryMessage): string | undefined {
   return parts.length > 0 ? parts.join("\n\n") : undefined;
 }
 
+// 从历史消息中提取工具调用追踪
 function toolTracesFromHistory(message: HistoryMessage): string[] {
   if (!Array.isArray(message.tool_calls)) return [];
   return message.tool_calls
@@ -39,7 +40,7 @@ function toolTracesFromHistory(message: HistoryMessage): string[] {
     .filter((trace): trace is string => !!trace);
 }
 
-/** Sidebar state: fetches the full session list and exposes create / delete actions. */
+/** 侧边栏状态：获取完整的会话列表并暴露创建/删除操作。 */
 export function useSessions(): {
   sessions: ChatSummary[];
   loading: boolean;

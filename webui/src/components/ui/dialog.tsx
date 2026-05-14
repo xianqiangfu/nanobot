@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+// 模态对话框组件，支持可访问性和焦点管理
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
@@ -48,6 +49,7 @@ const DialogContent = React.forwardRef<
 ));
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
+// 对话框标题区域
 const DialogHeader = ({
   className,
   ...props
@@ -62,6 +64,7 @@ const DialogHeader = ({
 );
 DialogHeader.displayName = "DialogHeader";
 
+// 对话框底部操作按钮区域
 const DialogFooter = ({
   className,
   ...props

@@ -20,6 +20,7 @@ interface ChatListProps {
   emptyLabel?: string;
 }
 
+// 从会话摘要派生显示标题，优先使用标题或预览
 function titleFor(s: ChatSummary, fallbackTitle: string): string {
   const p = (s.title || s.preview)?.trim();
   if (p) return p.length > 48 ? `${p.slice(0, 45)}…` : p;

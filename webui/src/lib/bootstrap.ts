@@ -2,7 +2,7 @@ import type { BootstrapResponse } from "./types";
 
 const SECRET_STORAGE_KEY = "nanobot-webui.bootstrap-secret";
 
-/** Read a previously saved bootstrap secret from localStorage. */
+/** 从 localStorage 读取之前保存的引导密钥。 */
 export function loadSavedSecret(): string {
   if (typeof window === "undefined") return "";
   try {
@@ -12,7 +12,7 @@ export function loadSavedSecret(): string {
   }
 }
 
-/** Persist the bootstrap secret so page reloads don't re-prompt. */
+/** 持久化引导密钥，以便页面重新加载不会重新提示。 */
 export function saveSecret(secret: string): void {
   try {
     window.localStorage.setItem(SECRET_STORAGE_KEY, secret);
@@ -21,7 +21,7 @@ export function saveSecret(secret: string): void {
   }
 }
 
-/** Clear the saved bootstrap secret (sign out). */
+/** 清除保存的引导密钥（注销）。 */
 export function clearSavedSecret(): void {
   try {
     window.localStorage.removeItem(SECRET_STORAGE_KEY);
@@ -31,8 +31,8 @@ export function clearSavedSecret(): void {
 }
 
 /**
- * Fetch a short-lived token + the WebSocket path from the gateway's
- * ``/webui/bootstrap`` endpoint.
+ * 从网关的 ``/webui/bootstrap`` 端点获取
+ * 短期令牌 + WebSocket 路径。
  */
 export async function fetchBootstrap(
   baseUrl: string = "",
@@ -57,7 +57,7 @@ export async function fetchBootstrap(
   return body;
 }
 
-/** Derive a WebSocket URL from the current window location and the server-provided path.
+/** 从当前窗口位置和服务器提供的路径派生 WebSocket URL。
  *
  * Keeps the path segment exactly as the server registered it: the root ``/``
  * stays ``/`` and non-root paths are not given an extra trailing slash. This

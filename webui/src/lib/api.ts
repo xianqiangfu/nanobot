@@ -7,6 +7,7 @@ import type {
   WebSearchSettingsUpdate,
 } from "./types";
 
+// HTTP API 错误类，包装状态码和错误信息
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -16,6 +17,7 @@ export class ApiError extends Error {
   }
 }
 
+// 通用 HTTP 请求函数，处理认证和错误
 async function request<T>(
   url: string,
   token: string,
@@ -66,7 +68,11 @@ export async function listSessions(
   }));
 }
 
-/** Signed image URL attached to a historical user message. The server
+/** 附加到历史用户消息的签名图片 URL。服务器
+ * 发送这些而不是原始磁盘路径，以便客户端可以
+ * 呈现预览而无需了解媒体在磁盘上的位置。每个 URL 都是
+ * 自认证的 ``/api/media/...`` 路由（请参阅后端
+ * ``_sign_media_path``），可以安全地放入 ``<img src>`` 属性。 */
  * emits these in place of raw on-disk paths so the client can render
  * previews without learning where media lives on disk. Each URL is a
  * self-authenticating ``/api/media/...`` route (see backend

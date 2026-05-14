@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
-/** Extract image ``File``s from a paste / drop event.
+/** 从粘贴/拖放事件中提取图片 ``File``。
  *
  * Deliberate behaviour:
  *   - Only items whose ``kind === "file"`` and ``type`` starts with
@@ -25,7 +25,7 @@ export function extractImageFilesFromPaste(
   return files;
 }
 
-/** Extract dropped image files, mirroring ``extractImageFilesFromPaste``. */
+/** 提取拖放的图片文件，镜像 ``extractImageFilesFromPaste``。 */
 export function extractImageFilesFromDrop(
   event: DragEvent | React.DragEvent,
 ): File[] {
@@ -51,7 +51,7 @@ export interface UseClipboardAndDropApi {
   onDrop: (event: React.DragEvent) => void;
 }
 
-/** Wire paste + drag-and-drop to a callback.
+/** 将粘贴 + 拖放连接到回调。
  *
  * The hook owns ``isDragging`` state and the refcount that keeps it accurate
  * across nested ``dragenter`` / ``dragleave`` events (a known DOM gotcha: the

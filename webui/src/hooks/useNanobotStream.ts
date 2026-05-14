@@ -13,14 +13,14 @@ import type {
 } from "@/lib/types";
 
 interface StreamBuffer {
-  /** ID of the assistant message currently receiving deltas. */
+  /** 正在接收增量数据的助手消息 ID。 */
   messageId: string;
-  /** Sequence of deltas accumulated in order. */
+  /** 按顺序累积的增量片段。 */
   parts: string[];
 }
 
 /**
- * Append a reasoning chunk to the last open reasoning stream in ``prev``.
+ * 将推理片段附加到 ``prev`` 中最后打开的推理流。
  *
  * Lookup rule: prefer the most recent assistant turn in the active UI tail.
  * Most providers emit reasoning before answer text, but some only expose
@@ -78,12 +78,10 @@ function attachReasoningChunk(prev: UIMessage[], chunk: string): UIMessage[] {
 }
 
 /**
- * Find the most recent assistant placeholder that an incoming answer
- * delta should adopt instead of spawning a parallel row. We look for an
- * empty-content assistant turn that is still marked ``isStreaming`` —
- * typically created earlier by ``reasoning_delta``. Anything else means
- * the model already produced an answer in a previous turn, so the new
- * delta belongs in a fresh row.
+ * 查找最接近的助手占位符，让传入的答案增量附加到该占位符
+ * 而不是创建新行。我们查找仍然标记为 ``isStreaming`` 的空内容助手回合，
+ * 这通常由 ``reasoning_delta`` 早期创建。其他情况意味着模型已经在
+ * 之前的回合中产生了答案，所以新的增量应该在新行中。
  */
 function findActiveAssistantPlaceholder(prev: UIMessage[]): string | null {
   const last = prev[prev.length - 1];
@@ -95,8 +93,8 @@ function findActiveAssistantPlaceholder(prev: UIMessage[]): string | null {
 }
 
 /**
- * Close the active reasoning stream segment, if any. Idempotent: a
- * ``reasoning_end`` with no preceding deltas is a harmless no-op.
+ * 关闭活动的推理流段（如果有）。幂等性：没有前置增量的
+ * ``reasoning_end`` 是无害的无操作。
  */
 function closeReasoningStream(prev: UIMessage[]): UIMessage[] {
   for (let i = prev.length - 1; i >= 0; i -= 1) {
@@ -162,12 +160,12 @@ function absorbCompleteAssistantMessage(
 }
 
 /**
- * Subscribe to a chat by ID. Returns the in-memory message list for the chat,
- * a streaming flag, and a ``send`` function. Initial history must be seeded
- * separately (e.g. via ``fetchSessionMessages``) since the server only replays
- * live events.
+ * 通过 ID 订阅聊天。返回聊天的内存中消息列表、
+ * 流式标志和 ``send`` 函数。初始历史记录必须单独
+ * 播种（例如通过 ``fetchSessionMessages``），因为服务器
+ * 只重放实时事件。
  */
-/** Payload passed to ``send`` when the user attaches one or more images.
+/** 用户附加一个或多个图像时传递给 ``send`` 的负载。
  *
  * ``media`` is handed to the wire client verbatim; ``preview`` powers the
  * optimistic user bubble (blob URLs so the preview appears before the server

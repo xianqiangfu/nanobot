@@ -5,10 +5,9 @@ import App from "./App";
 import "./globals.css";
 import "./i18n";
 
-// `crypto.randomUUID` is only defined in secure contexts (HTTPS or localhost).
-// LAN access over plain HTTP leaves it undefined, which crashes components that
-// generate client-side message IDs. Shim a v4-ish fallback so call sites stay
-// uniform across secure and non-secure contexts.
+// 在安全上下文（HTTPS 或 localhost）中才定义 `crypto.randomUUID`。
+// 通过纯 HTTP 的 LAN 访问会使其未定义，这会导致生成客户端消息 ID 的组件崩溃。
+// 添加一个 v4 风格的回退实现，确保在安全和非安全上下文中调用站点保持一致。
 if (typeof globalThis.crypto !== "undefined" && !("randomUUID" in globalThis.crypto)) {
   Object.defineProperty(globalThis.crypto, "randomUUID", {
     value: () =>
@@ -21,6 +20,7 @@ if (typeof globalThis.crypto !== "undefined" && !("randomUUID" in globalThis.cry
   });
 }
 
+// React 18+ 使用 createRoot 而非 render，以启用并发特性
 const root = document.getElementById("root");
 if (!root) throw new Error("root element missing");
 

@@ -11,10 +11,9 @@ interface StreamErrorNoticeProps {
 }
 
 /**
- * Dismissible banner that surfaces transport-level faults the user needs to
- * know about. Rendered above the composer so the message the fault referred
- * to remains in view just above. ``role="alert"`` + ``aria-live="assertive"``
- * ensures screen readers announce the failure.
+ * 可关闭的错误横幅，显示用户需要了解的传输层错误。
+ * 渲染在编辑器上方，让错误所指的消息保持可见。
+ * role="alert" + aria-live="assertive" 确保屏幕阅读器能够播报错误。
  */
 export function StreamErrorNotice({ error, onDismiss }: StreamErrorNoticeProps) {
   const { t } = useTranslation();
@@ -52,6 +51,7 @@ export function StreamErrorNotice({ error, onDismiss }: StreamErrorNoticeProps) 
   );
 }
 
+// 根据错误类型返回本地化的错误信息
 function resolveCopy(
   error: StreamError,
   t: (key: string) => string,

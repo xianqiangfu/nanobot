@@ -1,6 +1,6 @@
 import i18n, { currentLocale } from "@/i18n";
 
-/** Truncate the first user message into a chat title. */
+/** 将第一条用户消息截取为聊天标题。 */
 export function deriveTitle(preview: string | undefined, fallback: string): string {
   if (!preview) return fallback;
   const oneLine = preview.replace(/\s+/g, " ").trim();
@@ -8,7 +8,7 @@ export function deriveTitle(preview: string | undefined, fallback: string): stri
   return oneLine.length > 60 ? `${oneLine.slice(0, 57)}…` : oneLine;
 }
 
-/** Loose ISO-or-epoch parser; returns ``null`` for missing/invalid input. */
+/** 宽松的 ISO 或 epoch 解析器；对于缺失/无效输入返回 ``null``。 */
 function parseDate(value: string | number | null | undefined): Date | null {
   if (value === null || value === undefined || value === "") return null;
   const d = new Date(value);
