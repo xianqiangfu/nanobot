@@ -1,4 +1,8 @@
-"""Feishu/Lark channel implementation using lark-oapi SDK with WebSocket long connection."""
+"""飞书/Lark通道实现，使用lark-oapi SDK通过WebSocket长连接。
+
+通过CardKit流式API实现实时响应，支持富文本解析、主题会话隔离、
+卡片消息渲染等功能。提供消息格式转换和飞书特定事件的处理。
+"""
 
 import asyncio
 import importlib.util

@@ -1,4 +1,17 @@
-"""Base class for agent tools."""
+"""工具基类 - 定义 agent 工具的核心抽象。
+
+设计思路：
+- 采用抽象基类（ABC）模式，强制子类实现 name/description/parameters 接口
+- 提供 JSON Schema 驱动的参数验证，确保工具调用的安全性
+- 支持参数类型自动转换（cast_params），降低 LLM 调用出错率
+- 通过 tool_parameters 装饰器简化参数 schema 定义
+
+为什么需要这个模块：
+- 统一的工具接口让 LLM 能以一致的方式调用各种能力
+- Schema 验证防止无效参数导致工具执行失败
+- 类型转换让 LLM 更容易正确调用工具（例如字符串转数字）
+"""
+
 from __future__ import annotations
 
 import typing

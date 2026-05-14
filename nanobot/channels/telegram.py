@@ -1,4 +1,8 @@
-"""Telegram channel implementation using python-telegram-bot."""
+"""Telegram通道实现，使用python-telegram-bot库。
+
+通过Bot API长轮询方式接收消息，支持Markdown格式的流式响应发送。
+提供命令处理、媒体文件下载、语音转写、重试机制等功能。
+"""
 
 from __future__ import annotations
 

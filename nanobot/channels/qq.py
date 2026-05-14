@@ -1,13 +1,13 @@
-"""QQ channel implementation using botpy SDK.
+"""QQ通道实现，使用botpy SDK。
 
-Inbound:
-- Parse QQ botpy messages (C2C / Group)
-- Download attachments to media dir using chunked streaming write (memory-safe)
-- Publish to Nanobot bus via BaseChannel._handle_message()
-- Content includes a clear, actionable "Received files:" list with local paths
+入站：
+- 解析QQ botpy消息（C2C/群组）
+- 使用分块流式写入将附件下载到媒体目录（内存安全）
+- 通过BaseChannel._handle_message()发布到nanobot总线
+- 内容包含清晰的"Received files:"列表和本地路径
 
-Outbound:
-- Send attachments (msg.media) first via QQ rich media API (base64 upload + msg_type=7)
+出站：
+- 先通过QQ富媒体API发送附件（msg.media，base64上传+msg_type=7）
 - Then send text (plain or markdown)
 - msg.media supports local paths, file:// paths, and http(s) URLs
 

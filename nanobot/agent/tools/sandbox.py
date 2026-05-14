@@ -1,8 +1,15 @@
 """Sandbox backends for shell command execution.
 
-To add a new backend, implement a function with the signature:
-    _wrap_<name>(command: str, workspace: str, cwd: str) -> str
-and register it in _BACKENDS below.
+设计思路：
+- _BACKENDS字典注册所有可用的沙箱后端
+- 每个后端函数返回包装后的完整命令字符串
+- bubblewrap（bwrap）后端创建隔离的文件系统环境
+- workspace目录可读写，其他系统目录只读或隐藏
+
+为什么需要这个模块：
+- Shell执行可能破坏系统（删除文件、修改配置等）
+- 沙箱隔离提供安全边界，防止意外破坏
+- 只读绑定系统目录确保基本命令可用
 """
 
 import shlex

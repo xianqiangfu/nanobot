@@ -1,10 +1,9 @@
-"""Personal WeChat (微信) channel using HTTP long-poll API.
+"""个人微信（微信）通道，使用HTTP长轮询API。
 
-Uses the ilinkai.weixin.qq.com API for personal WeChat messaging.
-No WebSocket, no local WeChat client needed — just HTTP requests with a
-bot token obtained via QR code login.
+使用ilinkai.weixin.qq.com API进行个人微信消息收发。无需WebSocket
+或本地微信客户端——只需通过二维码登录获取bot token即可使用HTTP请求。
 
-Protocol reverse-engineered from ``@tencent-weixin/openclaw-weixin`` v1.0.3.
+协议逆向自``@tencent-weixin/openclaw-weixin`` v1.0.3。
 """
 
 from __future__ import annotations

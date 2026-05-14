@@ -1,4 +1,16 @@
-"""Cron tool for scheduling reminders and tasks."""
+"""Cron tool for scheduling reminders and tasks.
+
+设计思路：
+- 支持三种调度方式：every_seconds（间隔）、cron_expr（cron表达式）、at（一次性）
+- 使用ContextVar跟踪发起调用的session上下文
+- 保护的system_event任务（如dream内存整合）不可删除
+- 任务触发时通过session_key关联到原始会话
+
+为什么需要这个模块：
+- LLM需要调度提醒和重复任务
+- 工具系统需要定时能力来支持异步工作流
+- 会话关联确保定时任务的结果能传递给正确用户
+"""
 
 from __future__ import annotations
 

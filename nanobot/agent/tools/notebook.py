@@ -1,4 +1,16 @@
-"""NotebookEditTool — edit Jupyter .ipynb notebooks."""
+"""NotebookEditTool — edit Jupyter .ipynb notebooks.
+
+设计思路：
+- 直接操作.ipynb的JSON格式，避免nbformat依赖
+- 支持三种模式：replace（替换）、insert（插入）、delete（删除）
+- 自动处理cell_type相关的字段切换（code ↔ markdown）
+- 支持创建新笔记本（insert模式配合不存在的文件）
+
+为什么需要这个模块：
+- Jupyter笔记本是数据科学常用的交互式文档格式
+- LLM需要能够直接编辑笔记本单元格来完成实验
+- edit_file工具无法正确处理.ipynb的复杂JSON结构
+"""
 
 from __future__ import annotations
 

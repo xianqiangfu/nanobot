@@ -1,4 +1,9 @@
-"""WhatsApp channel implementation using Node.js bridge."""
+"""WhatsApp通道实现，使用Node.js桥接服务。
+
+由于WhatsApp协议的复杂性，本通道通过Node.js桥接服务与WhatsApp通信。
+桥接服务使用@whiskeysockets/baileys处理WhatsApp Web协议，
+Python与Node.js之间通过WebSocket进行双向通信。
+"""
 
 import asyncio
 import hashlib

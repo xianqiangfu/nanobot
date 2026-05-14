@@ -1,4 +1,8 @@
-"""Discord channel implementation using discord.py."""
+"""Discord通道实现，使用discord.py库。
+
+通过Socket模式连接Discord，支持斜杠命令、交互式按钮、消息回复等功能。
+实现富文本格式转换、附件处理、表情符号交互等Discord特定功能。
+"""
 
 from __future__ import annotations
 

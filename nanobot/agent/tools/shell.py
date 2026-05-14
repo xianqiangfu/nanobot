@@ -1,4 +1,17 @@
-"""Shell execution tool."""
+"""Shell execution tool.
+
+设计思路：
+- 使用deny_patterns阻止危险命令（rm -rf、format等）
+- restrict_to_workspace限制命令只能访问指定目录
+- 支持沙箱包装（bwrap）提供额外的安全隔离
+- 超时和输出截断防止命令挂起或产生过多输出
+- Windows和Unix使用不同的shell（cmd.exe vs bash -l）
+
+为什么需要这个模块：
+- LLM需要执行命令来完成编译、测试、安装等任务
+- 工具系统需要shell执行能力来支持实际的开发工作
+- 安全限制防止意外破坏系统文件或泄露敏感信息
+"""
 
 from __future__ import annotations
 

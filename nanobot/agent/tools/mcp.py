@@ -1,4 +1,17 @@
-"""MCP client: connects to MCP servers and wraps their tools as native nanobot tools."""
+"""MCP client: connects to MCP servers and wraps their tools as native nanobot tools.
+
+设计思路：
+- 每个MCP服务器连接使用独立的AsyncExitStack，避免cancel scope冲突
+- 支持stdio、sse、streamableHttp三种传输方式
+- 工具名称使用mcp_{server}_{name}前缀，避免命名冲突
+- 对OpenAI不支持的nullable类型进行schema归一化
+- 对瞬态连接错误自动重试一次
+
+为什么需要这个模块：
+- MCP协议允许LLM访问外部服务（数据库、API等）
+- 统一的MCP客户端避免每个提供商单独实现
+- schema归一化确保兼容不同的LLM提供商
+"""
 
 import asyncio
 import os

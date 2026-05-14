@@ -1,4 +1,8 @@
-"""Matrix (Element) channel — inbound sync + outbound message/media delivery."""
+"""Matrix（Element）通道——入站同步+出站消息/媒体投递。
+
+使用nio客户端库连接Matrix服务器，支持端到端加密（E2EE）、
+Markdown渲染、线程处理等功能。实现消息同步、媒体上传和响应投递。
+"""
 
 import asyncio
 import json

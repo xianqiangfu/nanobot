@@ -1,4 +1,16 @@
-"""Tool registry for dynamic tool management."""
+"""Tool registry for dynamic tool management.
+
+设计思路：
+- 集中管理所有可用工具的注册和查找
+- 提供工具定义的缓存机制，避免重复生成schema
+- 支持工具参数的类型转换和验证
+- 为内置工具和MCP工具提供稳定的排序顺序
+
+为什么需要这个模块：
+- 工具系统需要一个统一的注册中心来管理不同来源的工具
+- LLM调用工具时需要获取所有工具的schema，缓存可以提升性能
+- 工具执行前的参数验证可以防止错误调用导致失败
+"""
 
 from typing import Any
 

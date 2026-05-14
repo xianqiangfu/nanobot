@@ -1,4 +1,17 @@
-"""File system tools: read, write, edit, list."""
+"""File system tools: read, write, edit, list.
+
+设计思路：
+- _FsTool作为基类，提供路径解析和目录限制
+- 支持read_file的行级分页（offset/limit）以控制输出大小
+- edit_file使用多级匹配策略（精确、trim、引号归一化）
+- read dedup机制避免重复读取未变化的文件
+- list_dir自动忽略常见的噪声目录
+
+为什么需要这个模块：
+- LLM需要读写文件来完成任务（代码开发、配置修改等）
+- 工具系统需要文件操作能力来支持实际的编程工作
+- 安全限制防止越界访问敏感系统目录
+"""
 
 import difflib
 import mimetypes

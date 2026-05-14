@@ -1,4 +1,15 @@
-"""RuntimeState protocol: agent loop state exposed to MyTool."""
+"""RuntimeState protocol: agent loop state exposed to MyTool.
+
+设计思路：
+- 使用Protocol定义最小接口契约
+- MyTool通过动态getattr/setattr访问任意属性
+- 运行时验证属性路径，而非编译时
+
+为什么需要这个模块：
+- MyTool需要检查和修改AgentLoop的运行时配置
+- Protocol解耦具体实现，便于测试和替换
+- 动态属性访问支持灵活的配置路径（如web_config.enable）
+"""
 
 from typing import Any, Protocol
 

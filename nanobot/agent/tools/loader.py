@@ -1,4 +1,16 @@
-"""Tool discovery and registration via package scanning."""
+"""Tool discovery and registration via package scanning.
+
+设计思路：
+- 通过扫描nanobot.agent.tools包自动发现工具类
+- 支持通过entry_points注册外部插件工具
+- 过滤不需要的模块（如base、schema等内部模块）
+- 根据配置的scope动态启用/禁用工具
+
+为什么需要这个模块：
+- 自动化工具发现避免手动注册，减少维护成本
+- 插件机制允许第三方扩展工具能力
+- scope控制确保不同运行环境下只加载合适的工具
+"""
 from __future__ import annotations
 
 import importlib

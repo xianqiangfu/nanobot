@@ -1,4 +1,16 @@
-"""Image generation tool."""
+"""Image generation tool.
+
+设计思路：
+- 通过配置的image provider（OpenRouter/AIHubMix）生成图片
+- 支持从reference_images进行图片编辑（img2img）
+- 生成的图片保存为artifacts，持久化到workspace
+- 验证reference_images必须在workspace或media目录内
+
+为什么需要这个模块：
+- 某些任务需要视觉内容，如生成示意图、图标等
+- 图片编辑能力支持基于已有图片的迭代改进
+- artifact机制确保生成的图片可以跨会话访问
+"""
 
 from __future__ import annotations
 

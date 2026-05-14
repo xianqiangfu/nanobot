@@ -1,4 +1,17 @@
-"""MyTool: runtime state inspection and configuration for the agent loop."""
+"""MyTool: runtime state inspection and configuration for the agent loop.
+
+设计思路：
+- 支持check（检查）和set（设置）两种操作
+- BLOCKED列表禁止访问敏感的内部组件
+- READ_ONLY列表允许检查但不允许修改
+- RESTRICTED列表对修改操作进行范围验证
+- scratchpad用于存储会话级别的临时数据
+
+为什么需要这个模块：
+- LLM需要检查自身状态（token使用、迭代进度等）
+- 某些场景需要动态调整配置（如增加max_iterations）
+- 敏感属性访问控制防止安全风险
+"""
 
 from __future__ import annotations
 

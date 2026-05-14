@@ -1,4 +1,16 @@
-"""Web tools: web_search and web_fetch."""
+"""Web tools: web_search and web_fetch.
+
+设计思路：
+- web_search支持多个提供商（DuckDuckGo、Brave、Tavily等）
+- web_fetch使用Jina Reader或readability-lxml提取可读内容
+- SSRF保护防止访问内部网络地址
+- 支持图片直接返回为内容块，避免文本化处理
+
+为什么需要这个模块：
+- LLM需要搜索网络获取最新信息和文档
+- 工具系统需要web访问能力来支持信息查询任务
+- SSRF保护防止泄露内部服务或绕过防火墙
+"""
 
 from __future__ import annotations
 

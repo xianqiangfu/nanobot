@@ -1,4 +1,9 @@
-"""Channel manager for coordinating chat channels."""
+"""通道管理器，协调所有聊天通道的消息路由。
+
+此类是通道系统的核心协调器，负责通道的生命周期管理、出站消息分发、
+流式传输合并、重复消息抑制等关键功能。通过集中管理，实现了统一的
+错误处理、重试策略和监控能力。
+"""
 
 from __future__ import annotations
 
@@ -21,7 +26,11 @@ if TYPE_CHECKING:
 
 
 def _default_webui_dist() -> Path | None:
-    """Return the absolute path to the bundled webui dist directory if it exists."""
+    """返回捆绑的webui dist目录的绝对路径（如果存在）。
+
+    WebSocket通道需要此路径来托管嵌入式WebUI界面。
+    如果web包未安装或dist目录不存在，返回None。
+    """
     try:
         import nanobot.web as web_pkg  # type: ignore[import-not-found]
     except ImportError:
@@ -30,9 +39,12 @@ def _default_webui_dist() -> Path | None:
     return candidate if candidate.is_dir() else None
 
 
-# Retry delays for message sending (exponential backoff: 1s, 2s, 4s)
+# 消息发送重试延迟（指数退避：1秒、2秒、4秒）
+# 使用指数退避可以在网络波动时自动调整重试频率，避免雪崩
 _SEND_RETRY_DELAYS = (1, 2, 4)
 
+# 布尔配置字段的camelCase别名映射
+# 支持从JSON/TOML配置文件读取驼峰命名的字段，提高配置灵活性
 _BOOL_CAMEL_ALIASES: dict[str, str] = {
     "send_progress": "sendProgress",
     "send_tool_hints": "sendToolHints",
@@ -41,12 +53,15 @@ _BOOL_CAMEL_ALIASES: dict[str, str] = {
 
 class ChannelManager:
     """
-    Manages chat channels and coordinates message routing.
+    管理聊天通道并协调消息路由。
 
-    Responsibilities:
-    - Initialize enabled channels (Telegram, WhatsApp, etc.)
-    - Start/stop channels
-    - Route outbound messages
+    职责：
+    - 初始化启用的通道（Telegram、WhatsApp等）
+    - 启动/停止通道
+    - 路由出站消息
+
+    通过集中管理所有通道实例，实现了统一的配置解析、错误处理和
+    状态监控，同时提供流式传输合并、重复消息抑制等优化功能。
     """
 
     def __init__(
@@ -66,7 +81,11 @@ class ChannelManager:
         self._init_channels()
 
     def _init_channels(self) -> None:
-        """Initialize channels discovered via pkgutil scan + entry_points plugins."""
+        """初始化通过pkgutil扫描和entry_points插件发现的通道。
+
+        此方法自动发现所有可用的通道实现，根据配置启用对应的通道，
+        并注入共享的转写服务配置和发送行为设置。
+        """
         from nanobot.channels.registry import discover_all
 
         transcription_provider = self.config.channels.transcription_provider
@@ -87,18 +106,20 @@ class ChannelManager:
                 continue
             try:
                 kwargs: dict[str, Any] = {}
-                # Only the WebSocket channel currently hosts the embedded webui
-                # surface; other channels stay oblivious to these knobs.
+                # 只有WebSocket通道当前托管嵌入式webui界面；
+                # 其他通道保持对这些配置的无感知。
                 if cls.name == "websocket" and self._session_manager is not None:
                     kwargs["session_manager"] = self._session_manager
                     static_path = _default_webui_dist()
                     if static_path is not None:
                         kwargs["static_dist_path"] = static_path
                 channel = cls(section, self.bus, **kwargs)
+                # 注入共享的转写服务配置
                 channel.transcription_provider = transcription_provider
                 channel.transcription_api_key = transcription_key
                 channel.transcription_api_base = transcription_base
                 channel.transcription_language = transcription_language
+                # 注入发送行为配置，支持通道级覆盖
                 channel.send_progress = self._resolve_bool_override(
                     section, "send_progress", self.config.channels.send_progress,
                 )
@@ -116,7 +137,7 @@ class ChannelManager:
         self._validate_allow_from()
 
     def _resolve_transcription_key(self, provider: str) -> str:
-        """Pick the API key for the configured transcription provider."""
+        """为配置的转写提供商选择API密钥。"""
         try:
             if provider == "openai":
                 return self.config.providers.openai.api_key
@@ -125,7 +146,7 @@ class ChannelManager:
             return ""
 
     def _resolve_transcription_base(self, provider: str) -> str:
-        """Pick the API base URL for the configured transcription provider."""
+        """为配置的转写提供商选择API基础URL。"""
         try:
             if provider == "openai":
                 return self.config.providers.openai.api_base or ""
@@ -134,6 +155,10 @@ class ChannelManager:
             return ""
 
     def _validate_allow_from(self) -> None:
+        """验证所有通道的allow_from配置不为空列表。
+
+        空列表会拒绝所有访问，通常表示配置错误，应提前阻止启动。
+        """
         for name, ch in self.channels.items():
             cfg = ch.config
             if isinstance(cfg, dict):
@@ -150,7 +175,7 @@ class ChannelManager:
                 )
 
     def _should_send_progress(self, channel_name: str, *, tool_hint: bool = False) -> bool:
-        """Return whether progress (or tool-hints) may be sent to *channel_name*."""
+        """返回是否可以向channel_name发送进度（或工具提示）。"""
         ch = self.channels.get(channel_name)
         if ch is None:
             logger.warning("Progress check for unknown channel: {}", channel_name)
@@ -158,11 +183,10 @@ class ChannelManager:
         return ch.send_tool_hints if tool_hint else ch.send_progress
 
     def _resolve_bool_override(self, section: Any, key: str, default: bool) -> bool:
-        """Return *key* from *section* if it is a bool, otherwise *default*.
+        """如果section中key是布尔值则返回，否则返回default。
 
-        For dict configs also checks the camelCase alias (e.g. ``sendProgress``
-        for ``send_progress``) so raw JSON/TOML configs work alongside
-        Pydantic models.
+        对于dict配置还会检查camelCase别名（如sendProgress对应send_progress），
+        使原始JSON/TOML配置可以与Pydantic模型一起工作。
         """
         if isinstance(section, dict):
             value = section.get(key)
@@ -175,22 +199,25 @@ class ChannelManager:
         return value if isinstance(value, bool) else default
 
     async def _start_channel(self, name: str, channel: BaseChannel) -> None:
-        """Start a channel and log any exceptions."""
+        """启动一个通道并记录任何异常。
+
+        将通道启动包装在try-except中，确保单个通道失败不会影响其他通道。
+        """
         try:
             await channel.start()
         except Exception:
             logger.exception("Failed to start channel {}", name)
 
     async def start_all(self) -> None:
-        """Start all channels and the outbound dispatcher."""
+        """启动所有通道和出站分发器。"""
         if not self.channels:
             logger.warning("No channels enabled")
             return
 
-        # Start outbound dispatcher
+        # 启动出站分发器
         self._dispatch_task = asyncio.create_task(self._dispatch_outbound())
 
-        # Start channels
+        # 启动通道
         tasks = []
         for name, channel in self.channels.items():
             logger.info("Starting {} channel...", name)
@@ -198,11 +225,15 @@ class ChannelManager:
 
         self._notify_restart_done_if_needed()
 
-        # Wait for all to complete (they should run forever)
+        # 等待所有任务完成（它们应该永久运行）
         await asyncio.gather(*tasks, return_exceptions=True)
 
     def _notify_restart_done_if_needed(self) -> None:
-        """Send restart completion message when runtime env markers are present."""
+        """当运行时环境标记存在时发送重启完成消息。
+
+        系统通过环境变量传递重启通知信息，此方法检查并发送完成消息
+        到触发重启的聊天会话。
+        """
         notice = consume_restart_notice_from_env()
         if not notice:
             return
@@ -220,16 +251,16 @@ class ChannelManager:
         ))
 
     async def stop_all(self) -> None:
-        """Stop all channels and the dispatcher."""
+        """停止所有通道和分发器。"""
         logger.info("Stopping all channels...")
 
-        # Stop dispatcher
+        # 停止分发器
         if self._dispatch_task:
             self._dispatch_task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._dispatch_task
 
-        # Stop all channels
+        # 停止所有通道
         for name, channel in self.channels.items():
             try:
                 await channel.stop()
@@ -239,10 +270,19 @@ class ChannelManager:
 
     @staticmethod
     def _fingerprint_content(content: str) -> str:
+        """生成消息内容的哈希指纹，用于重复检测。
+
+        规范化空格后使用SHA1哈希，确保相同内容的消息具有相同指纹。
+        """
         normalized = " ".join(content.split())
         return hashlib.sha1(normalized.encode("utf-8")).hexdigest() if normalized else ""
 
     def _should_suppress_outbound(self, msg: OutboundMessage) -> bool:
+        """检查是否应该抑制此出站消息以避免重复发送。
+
+        基于消息内容指纹和关联的消息ID进行判断。相同的指纹且关联到
+        同一源消息则认为是重复。进度消息和流式片段不被抑制。
+        """
         metadata = msg.metadata or {}
         if metadata.get("_progress"):
             return False
@@ -349,7 +389,7 @@ class ChannelManager:
 
     @staticmethod
     async def _send_once(channel: BaseChannel, msg: OutboundMessage) -> None:
-        """Send one outbound message without retry policy."""
+        """发送一条出站消息而不应用重试策略。"""
         if msg.metadata.get("_reasoning_end"):
             await channel.send_reasoning_end(msg.chat_id, msg.metadata)
         elif msg.metadata.get("_reasoning_delta"):
@@ -367,13 +407,13 @@ class ChannelManager:
     def _coalesce_stream_deltas(
         self, first_msg: OutboundMessage
     ) -> tuple[OutboundMessage, list[OutboundMessage]]:
-        """Merge consecutive _stream_delta messages for the same (channel, chat_id).
+        """合并同一(channel, chat_id)的连续_stream_delta消息。
 
-        This reduces the number of API calls when the queue has accumulated multiple
-        deltas, which happens when LLM generates faster than the channel can process.
+        当队列累积多个delta时，这会减少API调用数，这种情况发生在
+        LLM生成速度快于通道处理速度时。
 
         Returns:
-            tuple of (merged_message, list_of_non_matching_messages)
+            (合并后的消息, 不匹配消息列表)的元组
         """
         target_key = (first_msg.channel, first_msg.chat_id)
         combined_content = first_msg.content
@@ -415,9 +455,9 @@ class ChannelManager:
         return merged, non_matching
 
     async def _send_with_retry(self, channel: BaseChannel, msg: OutboundMessage) -> None:
-        """Send a message with retry on failure using exponential backoff.
+        """使用指数退避的重试策略发送消息。
 
-        Note: CancelledError is re-raised to allow graceful shutdown.
+        注：CancelledError被重新抛出以允许优雅关闭。
         """
         max_attempts = max(self.config.channels.send_max_retries, 1)
 
@@ -445,11 +485,11 @@ class ChannelManager:
                     raise  # Propagate cancellation during sleep
 
     def get_channel(self, name: str) -> BaseChannel | None:
-        """Get a channel by name."""
+        """按名称获取通道。"""
         return self.channels.get(name)
 
     def get_status(self) -> dict[str, Any]:
-        """Get status of all channels."""
+        """获取所有通道的状态。"""
         return {
             name: {
                 "enabled": True,
@@ -460,5 +500,5 @@ class ChannelManager:
 
     @property
     def enabled_channels(self) -> list[str]:
-        """Get list of enabled channel names."""
+        """获取启用的通道名称列表。"""
         return list(self.channels.keys())

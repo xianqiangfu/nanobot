@@ -1,4 +1,8 @@
-"""WebSocket server channel: nanobot acts as a WebSocket server and serves connected clients."""
+"""WebSocket服务器通道：nanobot作为WebSocket服务器服务连接的客户端。
+
+提供自定义WebSocket接口，支持令牌认证、媒体签名、会话管理等。
+可以托管嵌入式WebUI界面，实现完整的Web交互体验。
+"""
 
 from __future__ import annotations
 

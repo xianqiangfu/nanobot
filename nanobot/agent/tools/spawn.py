@@ -1,4 +1,15 @@
-"""Spawn tool for creating background subagents."""
+"""Spawn tool for creating background subagents.
+
+设计思路：
+- 使用ContextVar跟踪发起调用的origin上下文
+- 限制并发子代理数量，防止资源耗尽
+- 子代理在后台独立运行，完成后异步通知
+
+为什么需要这个模块：
+- 主代理可以委托耗时的子任务给子代理，避免阻塞
+- 子代理可以独立管理自己的对话状态和工具调用
+- 支持复杂任务的并行处理，提升整体效率
+"""
 
 from __future__ import annotations
 

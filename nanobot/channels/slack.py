@@ -1,4 +1,8 @@
-"""Slack channel implementation using Socket Mode."""
+"""Slack通道实现，使用Socket Mode连接。
+
+通过Slack Socket Mode SDK接收事件，无需公网IP。支持线程上下文、
+Markdown格式转换、文件附件处理、交互式消息等功能。
+"""
 
 import asyncio
 import re

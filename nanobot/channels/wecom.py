@@ -1,4 +1,9 @@
-"""WeCom (Enterprise WeChat) channel implementation using wecom_aibot_sdk."""
+"""企业微信通道实现，使用wecom_aibot_sdk。
+
+通过WebSocket长连接与企业微信AI Bot平台通信，无需公网IP或webhook。
+支持文本、图片、语音、文件、混合内容的接收和发送，实现消息格式
+转换和媒体文件的上传下载。
+"""
 
 import asyncio
 import base64

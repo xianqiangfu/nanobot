@@ -1,4 +1,16 @@
-"""Track file-read state for read-before-edit warnings and read deduplication."""
+"""Track file-read state for read-before-edit warnings and read deduplication.
+
+设计思路：
+- FileStates：单会话的文件读写状态跟踪
+- FileStateStore：多会话的状态查找表
+- 使用ContextVar绑定当前会话的状态，避免污染其他会话
+- 通过mtime和content_hash双重检测文件变化
+
+为什么需要这个模块：
+- read-before-edit警告防止基于过期内容修改文件
+- read dedup避免重复读取未变化的文件，节省token
+- 会话隔离确保状态不会跨会话泄漏
+"""
 
 from __future__ import annotations
 

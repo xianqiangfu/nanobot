@@ -1,4 +1,16 @@
-"""Message tool for sending messages to users."""
+"""Message tool for sending messages to users.
+
+设计思路：
+- 使用ContextVar跟踪当前消息的默认channel和chat_id
+- 支持跨channel发送（主动通知、定时任务等）
+- 支持附件（media参数）和按钮（buttons参数）
+- 区分正常回复和主动发送，避免重复发送
+
+为什么需要这个模块：
+- 定时任务（cron）需要主动发送提醒消息
+- 子代理可能需要跨channel传递结果
+- 某些场景需要主动推送而非被动响应
+"""
 
 import os
 from contextvars import ContextVar

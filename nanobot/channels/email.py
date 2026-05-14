@@ -1,4 +1,8 @@
-"""Email channel implementation using IMAP polling + SMTP replies."""
+"""邮件通道实现，使用IMAP轮询+SMTP回复。
+
+通过IMAP协议定期轮询收件箱获取新邮件，通过SMTP协议发送回复。
+实现DKIM/SPF验证防止伪造、附件处理、反欺骗等功能。
+"""
 
 import asyncio
 import html
