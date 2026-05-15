@@ -1,13 +1,13 @@
 """
-Provider Registry — single source of truth for LLM provider metadata.
+提供商注册表 — LLM 提供商元数据的单一真实来源。
 
-Adding a new provider:
-  1. Add a ProviderSpec to PROVIDERS below.
-  2. Add a field to ProvidersConfig in config/schema.py.
-  Done. Env vars, config matching, status display all derive from here.
+添加新提供商：
+  1. 在下面的 PROVIDERS 中添加 ProviderSpec。
+  2. 在 config/schema.py 的 ProvidersConfig 中添加字段。
+  完成。环境变量、配置匹配、状态显示都由此派生。
 
-Order matters — it controls match priority and fallback. Gateways first.
-Every entry writes out all fields so you can copy-paste as a template.
+顺序很重要 — 它控制匹配优先级和回退。网关优先。
+每个条目都列出所有字段，以便复制粘贴作为模板。
 """
 
 from __future__ import annotations

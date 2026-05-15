@@ -1,4 +1,4 @@
-"""Runtime path helpers derived from the active config context."""
+"""从当前配置上下文派生的运行时路径助手。"""
 
 from __future__ import annotations
 

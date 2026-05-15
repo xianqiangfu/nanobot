@@ -1,4 +1,4 @@
-"""Parse Responses API SSE streams and SDK response objects."""
+"""解析 Responses API SSE 流和 SDK 响应对象。"""
 
 from __future__ import annotations
 

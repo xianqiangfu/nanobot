@@ -1,4 +1,4 @@
-"""Image generation provider helpers."""
+"""图像生成提供商辅助工具。"""
 
 from __future__ import annotations
 

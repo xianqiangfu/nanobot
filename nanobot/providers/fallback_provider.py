@@ -1,4 +1,4 @@
-"""Provider wrapper that transparently fails over to fallback models on error."""
+"""提供商封装，出错时透明地切换到备用模型。"""
 
 from __future__ import annotations
 

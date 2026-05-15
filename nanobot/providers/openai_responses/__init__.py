@@ -1,4 +1,4 @@
-"""Shared helpers for OpenAI Responses API providers (Codex, Azure OpenAI)."""
+"""OpenAI Responses API 提供商（Codex、Azure OpenAI）的共享辅助工具。"""
 
 from nanobot.providers.openai_responses.converters import (
     convert_messages,

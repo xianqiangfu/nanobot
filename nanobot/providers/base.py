@@ -1,4 +1,4 @@
-"""Base LLM provider interface."""
+"""LLM 提供商基类接口。"""
 
 import asyncio
 import json
