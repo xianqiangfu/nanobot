@@ -1,4 +1,14 @@
-"""Subagent manager for background task execution."""
+"""Subagent manager for background task execution.
+
+后台任务执行的子 agent 管理器。
+
+功能：
+- 在后台执行长时间运行的任务
+- 独立的工具注册表（受限的工具集）
+- 任务状态跟踪（进度、工具事件、token 使用）
+- 通过消息总线将结果通知主 agent
+- 支持按会话取消子 agent
+"""
 
 import asyncio
 import json
@@ -25,22 +35,25 @@ from nanobot.utils.prompt_templates import render_template
 
 @dataclass(slots=True)
 class SubagentStatus:
-    """Real-time status of a running subagent."""
+    """运行中子 agent 的实时状态。
+
+    包含任务的执行进度、状态和统计信息。
+    """
 
     task_id: str
     label: str
     task_description: str
     started_at: float          # time.monotonic()
-    phase: str = "initializing"  # initializing | awaiting_tools | tools_completed | final_response | done | error
+    phase: str = "initializing"  # 初始化状态：initializing | awaiting_tools | tools_completed | final_response | done | error
     iteration: int = 0
     tool_events: list = field(default_factory=list)   # [{name, status, detail}, ...]
-    usage: dict = field(default_factory=dict)          # token usage
+    usage: dict = field(default_factory=dict)          # token 使用统计
     stop_reason: str | None = None
     error: str | None = None
 
 
 class _SubagentHook(AgentHook):
-    """Hook for subagent execution — logs tool calls and updates status."""
+    """子 agent 执行的钩子 — 记录工具调用并更新状态。"""
 
     def __init__(self, task_id: str, status: SubagentStatus | None = None) -> None:
         super().__init__()
@@ -66,7 +79,15 @@ class _SubagentHook(AgentHook):
 
 
 class SubagentManager:
-    """Manages background subagent execution."""
+    """管理后台子 agent 执行。
+
+    功能：
+    - spawn: 在后台执行任务
+    - 独立的工具注册表（受限的工具集）
+    - 任务状态跟踪（进度、工具事件、token 使用）
+    - 通过消息总线将结果通知主 agent
+    - 支持按会话取消子 agent
+    """
 
     def __init__(
         self,

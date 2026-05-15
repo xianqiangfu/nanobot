@@ -1,4 +1,13 @@
-"""Helpers for runtime model preset selection."""
+"""Helpers for runtime model preset selection.
+
+运行时模型预设选择辅助函数。
+
+功能：
+- 解析和验证模型预设配置
+- 构建预设快照（provider + model + 上下文窗口）
+- 在运行时切换模型预设
+- 管理默认预设选择
+"""
 
 from __future__ import annotations
 

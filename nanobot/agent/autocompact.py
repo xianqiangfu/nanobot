@@ -1,4 +1,13 @@
-"""Auto compact: proactive compression of idle sessions to reduce token cost and latency."""
+"""Auto compact: proactive compression of idle sessions to reduce token cost and latency.
+
+自动压缩：主动压缩空闲会话以减少 token 成本和延迟。
+
+功能：
+- 基于会话 TTL 的自动压缩
+- 保留最近的几条消息作为后缀
+- 使用 Consolidator 进行 LLM 摘要
+- 会话缓存摘要以提高性能
+"""
 
 from __future__ import annotations
 
@@ -15,6 +24,20 @@ if TYPE_CHECKING:
 
 
 class AutoCompact:
+    """空闲会话自动压缩管理器。
+
+    功能：
+    - 定期检查空闲会话
+    - 归档旧消息并生成摘要
+    - 保留最近的消息作为上下文
+    - 缓存会话摘要以提高性能
+
+    流程：
+    1. check_expired: 查找过期的空闲会话
+    2. _archive: 异步归档过期的会话
+    3. prepare_session: 准备会话时注入摘要
+    """
+
     _RECENT_SUFFIX_MESSAGES = 8
 
     def __init__(self, sessions: SessionManager, consolidator: Consolidator,

@@ -1,4 +1,17 @@
-"""Memory system: pure file I/O store, lightweight Consolidator, and Dream processor."""
+"""Memory system: pure file I/O store, lightweight Consolidator, and Dream processor.
+
+记忆系统：纯文件 I/O 存储、轻量级整合器和 Dream 处理器。
+
+组件：
+1. MemoryStore: 纯文件 I/O 层，管理 MEMORY.md、history.jsonl、SOUL.md、USER.md
+2. Consolidator: 基于 token 预算的轻量级整合器
+3. Dream: 两阶段记忆处理器（cron 调度）
+
+设计理念：
+- 原子写入：使用 fsync 确保数据持久化
+- 单一来源：每个数据文件只有一个写入者
+- 错误恢复：损坏的条目会被跳过和记录
+"""
 
 from __future__ import annotations
 
@@ -35,11 +48,19 @@ if TYPE_CHECKING:
 
 
 # ---------------------------------------------------------------------------
-# MemoryStore — pure file I/O layer
+# MemoryStore — 纯文件 I/O 层
 # ---------------------------------------------------------------------------
 
 class MemoryStore:
-    """Pure file I/O for memory files: MEMORY.md, history.jsonl, SOUL.md, USER.md."""
+    """纯文件 I/O 层，管理记忆文件：MEMORY.md、history.jsonl、SOUL.md、USER.md。
+
+    特性：
+    - 原子写入：使用临时文件 + fsync 确保持久化
+    - 游标管理：支持增量读取和恢复点
+    - 历史迁移：自动从 HISTORY.md 迁移到 history.jsonl
+    - Git 集成：跟踪重要文件的变更
+    - 容错处理：损坏的条目会被跳过和记录
+    """
 
     _DEFAULT_MAX_HISTORY = 1000
     _LEGACY_ENTRY_START_RE = re.compile(r"^\[(\d{4}-\d{2}-\d{2}[^\]]*)\]\s*")
@@ -429,24 +450,31 @@ class MemoryStore:
 
 
 # ---------------------------------------------------------------------------
-# Consolidator — lightweight token-budget triggered consolidation
+# Consolidator — 轻量级 token 预算触发的整合器
 # ---------------------------------------------------------------------------
 
 
 # Individual history.jsonl writers cap their own payloads tightly; the
 # _HISTORY_ENTRY_HARD_CAP at append_history() is a belt-and-suspenders default
 # that catches any new caller that forgot to set its own cap.
-_RAW_ARCHIVE_MAX_CHARS = 16_000       # fallback dump (LLM failed)
-_ARCHIVE_SUMMARY_MAX_CHARS = 8_000    # LLM-produced consolidation summary
-_HISTORY_ENTRY_HARD_CAP = 64_000      # emergency cap in append_history
+_RAW_ARCHIVE_MAX_CHARS = 16_000       # 回退转储（LLM 失败时）
+_ARCHIVE_SUMMARY_MAX_CHARS = 8_000    # LLM 生成的整合摘要
+_HISTORY_ENTRY_HARD_CAP = 64_000      # append_history() 中的紧急上限
 
 
 class Consolidator:
-    """Lightweight consolidation: summarizes evicted messages into history.jsonl."""
+    """轻量级整合器：将被逐出的消息摘要到 history.jsonl。
+
+    功能：
+    - 基于 token 预算的自动压缩
+    - 基于回放窗口的压缩（replay_max_messages）
+    - 多轮压缩以适应预算
+    - LLM 摘要失败时回退到原始转储
+    """
 
     _MAX_CONSOLIDATION_ROUNDS = 5
 
-    _SAFETY_BUFFER = 1024  # extra headroom for tokenizer estimation drift
+    _SAFETY_BUFFER = 1024  # tokenizer 估计偏差的额外余量
 
     def __init__(
         self,
@@ -770,7 +798,7 @@ class Consolidator:
 
 
 # ---------------------------------------------------------------------------
-# Dream — heavyweight cron-scheduled memory consolidation
+# Dream — 重量级 cron 调度的记忆整合
 # ---------------------------------------------------------------------------
 
 
@@ -782,11 +810,18 @@ _STALE_THRESHOLD_DAYS = 14
 
 
 class Dream:
-    """Two-phase memory processor: analyze history.jsonl, then edit files via AgentRunner.
+    """两阶段记忆处理器：分析 history.jsonl，然后通过 AgentRunner 编辑文件。
 
-    Phase 1 produces an analysis summary (plain LLM call).
-    Phase 2 delegates to AgentRunner with read_file / edit_file tools so the
-    LLM can make targeted, incremental edits instead of replacing entire files.
+    Phase 1: 生成分析摘要（纯 LLM 调用）
+    Phase 2: 委托给 AgentRunner 使用 read_file / edit_file 工具，
+            LLM 可以进行有针对性的增量编辑，而不是替换整个文件
+
+    功能：
+    - 从 history.jsonl 读取未处理条目
+    - 为 MEMORY.md 添加年龄标注（基于 git blame）
+    - Phase 1: 分析历史并生成建议
+    - Phase 2: 执行编辑（创建技能、更新记忆等）
+    - Git 自动提交变更
     """
 
     # Caps on prompt-bound inputs so Dream's LLM calls never exceed the model's

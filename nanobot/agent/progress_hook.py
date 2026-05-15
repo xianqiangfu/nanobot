@@ -1,4 +1,14 @@
-"""Agent hook that adapts runner events into channel progress UI."""
+"""Agent hook that adapts runner events into channel progress UI.
+
+将 runner 事件转换为频道进度 UI 的 agent 钩子。
+
+功能：
+- 将 runner 生命周期事件转换为用户可见的进度信号
+- 提取推理内容（思考块）
+- 生成工具提示
+- 流式输出支持
+- 工具事件跟踪
+"""
 
 from __future__ import annotations
 
@@ -20,7 +30,15 @@ from nanobot.utils.tool_hints import format_tool_hints
 
 
 class AgentProgressHook(AgentHook):
-    """Translate runner lifecycle events into user-visible progress signals."""
+    """将 runner 生命周期事件转换为用户可见的进度信号。
+
+    功能：
+    - on_stream: 流式输出内容增量
+    - emit_reasoning: 发送推理内容（思考块）
+    - before_execute_tools: 工具执行前的进度更新
+    - after_iteration: 工具执行后的进度更新
+    - finalize_content: 最终化内容（移除思考标签）
+    """
 
     def __init__(
         self,
