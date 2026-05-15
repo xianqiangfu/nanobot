@@ -1,4 +1,4 @@
-"""CLI commands for nanobot."""
+"""nanobot 的 CLI 命令。"""
 
 import asyncio
 import os

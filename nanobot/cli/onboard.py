@@ -1,4 +1,4 @@
-"""Interactive onboarding questionnaire for nanobot."""
+"""nanobot 的交互式初始配置问卷。"""
 
 import json
 import types

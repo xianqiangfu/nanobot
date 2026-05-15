@@ -1,10 +1,9 @@
-"""Streaming renderer for CLI output.
+"""CLI 输出的流式渲染器。
 
-Uses Rich Live with ``transient=True`` for in-place markdown updates during
-streaming.  After the live display stops, a final clean render is printed
-so the content persists on screen.  ``transient=True`` ensures the live
-area is erased before ``stop()`` returns, avoiding the duplication bug
-that plagued earlier approaches.
+使用 Rich Live 配合 ``transient=True`` 在流式输出期间就地更新 Markdown。
+实时显示停止后，打印最终的干净渲染，使内容在屏幕上持久显示。
+``transient=True`` 确保在 ``stop()`` 返回前擦除实时区域，避免困扰早期方法
+的重复显示问题。
 """
 
 from __future__ import annotations

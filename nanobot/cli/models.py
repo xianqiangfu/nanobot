@@ -1,8 +1,7 @@
-"""Model information helpers for the onboard wizard.
+"""初始配置向导的模型信息助手。
 
-Model database / autocomplete is temporarily disabled while litellm is
-being replaced.  All public function signatures are preserved so callers
-continue to work without changes.
+模型数据库/自动完成功能暂时禁用（正在替换 litellm）。所有公共函数签名
+保持不变，以便调用者无需更改即可继续工作。
 """
 
 from __future__ import annotations

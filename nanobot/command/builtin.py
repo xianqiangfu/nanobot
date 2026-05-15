@@ -1,4 +1,4 @@
-"""Built-in slash command handlers."""
+"""内置斜杠命令处理器。"""
 
 from __future__ import annotations
 

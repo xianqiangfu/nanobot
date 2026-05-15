@@ -1,4 +1,4 @@
-"""Cron types."""
+"""Cron 类型定义。"""
 
 from dataclasses import dataclass, field
 from typing import Literal

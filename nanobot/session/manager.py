@@ -1,4 +1,4 @@
-"""Session management for conversation history."""
+"""对话历史记录的会话管理。"""
 
 import json
 import os

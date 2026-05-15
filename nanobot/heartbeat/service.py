@@ -1,4 +1,4 @@
-"""Heartbeat service - periodic agent wake-up to check for tasks."""
+"""心跳服务 - 定期唤醒代理以检查任务。"""
 
 from __future__ import annotations
 
