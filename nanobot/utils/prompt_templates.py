@@ -1,8 +1,7 @@
-"""Load and render agent system prompt templates (Jinja2) under nanobot/templates/.
+"""加载和渲染代理系统提示模板（Jinja2），模板位于 nanobot/templates/。
 
-Agent prompts live in ``templates/agent/`` (pass names like ``agent/identity.md``).
-Shared copy lives under ``agent/_snippets/`` and is included via
-``{% include 'agent/_snippets/....md' %}``.
+代理提示位于 ``templates/agent/``（传递名称如 ``agent/identity.md``）。
+共享副本位于 ``agent/_snippets/`` 下，通过 ``{% include 'agent/_snippets/....md' %}`` 包含。
 """
 
 from functools import lru_cache

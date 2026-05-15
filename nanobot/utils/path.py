@@ -1,4 +1,4 @@
-"""Path abbreviation utilities for display."""
+"""用于显示的路径缩写工具。"""
 
 from __future__ import annotations
 

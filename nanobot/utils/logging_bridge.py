@@ -1,4 +1,4 @@
-"""Utilities for redirecting stdlib logging to loguru."""
+"""将 stdlib 日志重定向到 loguru 的工具。"""
 from __future__ import annotations
 
 import logging

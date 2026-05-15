@@ -1,7 +1,6 @@
-"""Post-run evaluation for background tasks (heartbeat & cron).
+"""后台任务（心跳和 cron）的事后评估。
 
-After the agent executes a background task, this module makes a lightweight
-LLM call to decide whether the result warrants notifying the user.
+代理执行后台任务后，此模块进行轻量级 LLM 调用，以决定结果是否需要通知用户。
 """
 
 from __future__ import annotations

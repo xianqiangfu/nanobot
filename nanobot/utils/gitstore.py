@@ -1,4 +1,4 @@
-"""Git-backed version control for memory files, using dulwich."""
+"""使用 dulwich 的 Git 支持版本控制内存文件。"""
 
 from __future__ import annotations
 

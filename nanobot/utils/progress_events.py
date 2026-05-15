@@ -1,4 +1,4 @@
-"""Structured progress-event helpers shared by agent runtimes."""
+"""代理运行时共享的结构化进度事件助手。"""
 
 from __future__ import annotations
 

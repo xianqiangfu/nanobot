@@ -1,4 +1,4 @@
-"""Utility functions for nanobot."""
+"""nanobot 的工具函数。"""
 
 import base64
 import json
