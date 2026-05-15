@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 /**
- * nanobot WhatsApp Bridge
- * 
- * This bridge connects WhatsApp Web to nanobot's Python backend
- * via WebSocket. It handles authentication, message forwarding,
- * and reconnection logic.
- * 
- * Usage:
+ * nanobot WhatsApp 桥接器
+ *
+ * 此桥接器通过 WebSocket 将 WhatsApp Web 连接到 nanobot 的 Python 后端。
+ * 它处理身份验证、消息转发和重新连接逻辑。
+ *
+ * 用法：
  *   npm run build && npm start
- *   
- * Or with custom settings:
+ *
+ * 或使用自定义设置：
  *   BRIDGE_PORT=3001 AUTH_DIR=~/.nanobot/whatsapp npm start
  */
 

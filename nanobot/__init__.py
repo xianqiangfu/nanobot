@@ -1,5 +1,5 @@
 """
-nanobot - A lightweight AI agent framework
+nanobot - 轻量级 AI 代理框架
 """
 
 from importlib.metadata import PackageNotFoundError, version as _pkg_version

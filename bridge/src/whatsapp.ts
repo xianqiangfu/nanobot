@@ -1,6 +1,6 @@
 /**
- * WhatsApp client wrapper using Baileys.
- * Based on OpenClaw's working implementation.
+ * 使用 Baileys 的 WhatsApp 客户端封装。
+ * 基于 OpenClaw 的可工作实现。
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

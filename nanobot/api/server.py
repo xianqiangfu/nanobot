@@ -1,7 +1,7 @@
-"""OpenAI-compatible HTTP API server for a fixed nanobot session.
+"""用于固定 nanobot 会话的 OpenAI 兼容 HTTP API 服务器。
 
-Provides /v1/chat/completions and /v1/models endpoints.
-All requests route to a single persistent API session.
+提供 /v1/chat/completions 和 /v1/models 端点。
+所有请求路由到单个持久 API 会话。
 """
 
 from __future__ import annotations

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Skill Initializer - Creates a new skill from template
+技能初始化器 - 从模板创建新技能
 
-Usage:
+用法：
     init_skill.py <skill-name> --path <path> [--resources scripts,references,assets] [--examples]
 
-Examples:
+示例：
     init_skill.py my-new-skill --path skills/public
     init_skill.py my-new-skill --path skills/public --resources scripts,references
     init_skill.py my-api-helper --path skills/private --resources scripts --examples

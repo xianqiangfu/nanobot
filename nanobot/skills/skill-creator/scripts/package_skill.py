@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Skill Packager - Creates a distributable .skill file of a skill folder
+技能打包器 - 创建技能文件夹的可分发 .skill 文件
 
-Usage:
+用法：
     python package_skill.py <path/to/skill-folder> [output-directory]
 
-Example:
+示例：
     python package_skill.py skills/public/my-skill
     python package_skill.py skills/public/my-skill ./dist
 """
