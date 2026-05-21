@@ -1,28 +1,28 @@
-# nanobot WebUI
+# nanobot webui
 
-nanobot 网关的浏览器前端。使用 Vite + React 18 + TypeScript + Tailwind 3 + shadcn/ui 构建，通过 WebSocket 多路复用协议与网关通信，并从同一端口的嵌入式 REST 表面读取会话元数据。
+nanobot 网关的浏览器前端。它使用 Vite + React 18 + TypeScript + Tailwind 3 + shadcn/ui 构建，通过 WebSocket 多路复用协议与网关通信，并从同一端口上的嵌入式 REST 表面读取会话元数据。
 
-项目概览、安装指南和通用文档映射，请参见根目录的 [`README.md`](../README.md)。
+有关项目概述、安装指南和一般文档地图，请参阅根目录的 [`README.md`](../README.md)。
 
 ## 当前状态
 
 > [!NOTE]
-> 独立的 WebUI 开发工作流当前需要源代码检出。
+> 独立 WebUI 开发工作流程目前需要源代码检出。
 >
-> GitHub 仓库中的 WebUI 更新可能会先于下一个打包发布版本发布，因此源代码安装和发布的软件包版本尚未保证同步。
+> GitHub 仓库中的 WebUI 更新可能会在包含在下一个打包版本之前发布，因此源代码安装和已发布的包版本目前还不能保证同步。
 
-## 目录布局
+## 目录结构
 
 ```text
 webui/                 源代码树（本目录）
-nanobot/web/dist/      网关服务的构建输出
+nanobot/web/dist/      由网关服务的构建输出
 ```
 
 ## 从源代码开发
 
 ### 1. 从源代码安装 nanobot
 
-在仓库根目录中：
+在仓库根目录：
 
 ```bash
 pip install -e .
@@ -56,7 +56,7 @@ bun run dev
 
 然后打开 `http://127.0.0.1:5173`。
 
-默认情况下，开发服务器将 `/api`、`/webui`、`/auth` 和 WebSocket 流量代理到 `http://127.0.0.1:8765`。
+默认情况下，开发服务器会将 `/api`、`/webui`、`/auth` 和 WebSocket 流量代理到 `http://127.0.0.1:8765`。
 
 如果你的网关监听非默认端口，请将开发服务器指向它：
 
@@ -64,9 +64,9 @@ bun run dev
 NANOBOT_API_URL=http://127.0.0.1:9000 bun run dev
 ```
 
-### 从另一台设备访问（局域网）
+### 从其他设备访问（局域网）
 
-要在同一网络上的另一台设备上使用 webui，请将 `host` 设置为 `"0.0.0.0"` 并在 `~/.nanobot/config.json` 中配置 `token` 或 `tokenIssueSecret`：
+要在同一网络中的其他设备上使用 webui，请在 `~/.nanobot/config.json` 中将 `host` 设置为 `"0.0.0.0"` 并配置 `token` 或 `tokenIssueSecret`：
 
 ```json
 {
@@ -83,18 +83,18 @@ NANOBOT_API_URL=http://127.0.0.1:9000 bun run dev
 
 如果 `host` 是 `"0.0.0.0"` 且未设置 `token` 或 `tokenIssueSecret`，网关将拒绝启动。
 
-然后在另一台设备上打开 `http://<你的 IP>:8765`。webui 将显示一个身份验证表单，你需要在其中输入密钥。它会保存在你的浏览器中，因此你只需要输入一次。
+然后在其他设备上打开 `http://<your-ip>:8765`。webui 将显示一个身份验证表单，你可以在其中输入密钥。它会保存在浏览器中，因此只需输入一次。
 
-## 为打包的运行时构建
+## 构建用于打包运行时
 
 ```bash
 cd webui
 bun run build
 ```
 
-这会将生产资源写入 `../nanobot/web/dist`，这是 `nanobot gateway` 提供服务的目录，并被打包到 Python wheel 中。
+这将生产资源写入 `../nanobot/web/dist`，这是 `nanobot gateway` 服务的目录，并捆绑到 Python wheel 中。
 
-如果你要发布版本，请在打包之前运行构建，以便发布的 wheel 包含当前的 WebUI 资源。
+如果你要发布版本，请在打包之前运行构建，以便已发布的 wheel 包含当前的 WebUI 资源。
 
 ## 测试
 
@@ -105,4 +105,4 @@ bun run test
 
 ## 致谢
 
-- [`agent-chat-ui`](https://github.com/langchain-ai/agent-chat-ui) 为聊天界面的 UI 和交互设计提供了灵感。
+- [`agent-chat-ui`](https://github.com/langchain-ai/agent-chat-ui) 为聊天界面和交互提供了 UI 和交互灵感。
