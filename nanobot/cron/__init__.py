@@ -1,4 +1,4 @@
-"""Cron service for scheduled agent tasks."""
+"""用于代理任务调度的 Cron 服务。"""
 
 from nanobot.cron.service import CronService
 from nanobot.cron.types import CronJob, CronSchedule

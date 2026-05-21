@@ -1,4 +1,4 @@
-"""Network security utilities — SSRF protection and internal URL detection."""
+"""网络安全工具 — SSRF 保护和内部 URL 检测。"""
 
 from __future__ import annotations
 

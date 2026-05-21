@@ -1,4 +1,4 @@
-"""Minimal command routing table for slash commands."""
+"""斜杠命令的精简路由表。"""
 
 from __future__ import annotations
 

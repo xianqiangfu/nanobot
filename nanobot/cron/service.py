@@ -1,4 +1,4 @@
-"""Cron service for scheduling agent tasks."""
+"""用于代理任务调度的 Cron 服务。"""
 
 import asyncio
 import json
