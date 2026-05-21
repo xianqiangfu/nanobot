@@ -41,7 +41,7 @@ i18n/
 ```typescript
 export const defaultLocale = 'en';
 export const fallbackLocale = 'en';
-export const LOCALE_STORAGE_KEY = 'nanobot:locale';
+export const LOCALE_STORAGE_KEY = 'nanobot.locale';
 ```
 
 ### 工具函数
