@@ -1,4 +1,4 @@
-# 国际化 (i18n)
+# 国际化（i18n）
 
 本目录包含 WebUI 的国际化配置和翻译文件。
 
@@ -22,11 +22,11 @@ i18n/
 
 ## 支持的语言
 
-| 语言代码 | 语言名称 | 区域 |
-|---------|---------|------|
+| 语言代码 | 语言名称 | 地区 |
+|--------------|---------------|--------|
 | `en` | 英语 | 默认 |
-| `zh-CN` | 简体中文 | 中国大陆 |
-| `zh-TW` | 繁体中文 | 台湾 |
+| `zh-CN` | 中文（简体） | 中国大陆 |
+| `zh-TW` | 中文（繁体） | 台湾 |
 | `fr` | 法语 | 法国 |
 | `ja` | 日语 | 日本 |
 | `ko` | 韩语 | 韩国 |
@@ -34,7 +34,7 @@ i18n/
 | `vi` | 越南语 | 越南 |
 | `id` | 印尼语 | 印度尼西亚 |
 
-## 配置 (config.ts)
+## 配置（config.ts）
 
 ### 主要设置
 
@@ -48,7 +48,7 @@ export const LOCALE_STORAGE_KEY = 'nanobot.locale';
 
 - `normalizeLocale(locale)` - 规范化区域设置代码
 - `resolveInitialLocale()` - 解析初始区域设置
-- `persistLocale(locale)` - 保存区域设置到本地存储
+- `persistLocale(locale)` - 保存区域设置到 localStorage
 - `applyDocumentLocale(locale)` - 应用区域设置到文档
 
 ## 使用方法
@@ -84,7 +84,7 @@ const locale = currentLocale(); // 'zh-CN'
 
 ## 翻译文件结构
 
-翻译文件使用 JSON 格式，按功能模块组织：
+翻译文件采用 JSON 格式，按功能模块组织：
 
 ```json
 {
@@ -94,7 +94,7 @@ const locale = currentLocale(); // 'zh-CN'
     "settings": "设置"
   },
   "chat": {
-    "noSessions": "没有会话",
+    "noSessions": "无会话",
     "sendMessage": "发送消息"
   }
 }
@@ -102,13 +102,13 @@ const locale = currentLocale(); // 'zh-CN'
 
 ## 添加新语言
 
-1. 在 `locales/` 目录创建新的翻译文件
+1. 在 `locales/` 目录中创建新的翻译文件
 2. 在 `index.ts` 中导入并添加到 `resources` 对象
 3. 在 `config.ts` 中添加到支持的语言列表
 
 ## 注意事项
 
-- 所有翻译键使用点号分隔的命名空间
-- 回退语言是英语
+- 所有翻译键使用点分隔的命名空间
+- 备用语言为英语
 - 区域设置保存在 `localStorage` 中
 - 应用启动时自动加载保存的区域设置
