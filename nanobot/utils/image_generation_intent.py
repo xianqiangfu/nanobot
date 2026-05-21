@@ -1,4 +1,4 @@
-"""Helpers for WebUI image-generation intent metadata."""
+"""WebUI 图像生成意图元数据的助手。"""
 
 from __future__ import annotations
 

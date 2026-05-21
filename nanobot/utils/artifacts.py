@@ -1,4 +1,4 @@
-"""Artifact persistence helpers for generated media."""
+"""生成媒体结果的持久化助手。"""
 
 from __future__ import annotations
 

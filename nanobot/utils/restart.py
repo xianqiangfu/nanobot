@@ -1,4 +1,4 @@
-"""Helpers for restart notification messages."""
+"""重启通知消息的助手。"""
 
 from __future__ import annotations
 

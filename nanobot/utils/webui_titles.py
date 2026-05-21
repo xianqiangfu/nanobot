@@ -1,4 +1,4 @@
-"""Helpers for WebUI chat title generation."""
+"""WebUI 聊天标题生成的助手。"""
 
 from __future__ import annotations
 

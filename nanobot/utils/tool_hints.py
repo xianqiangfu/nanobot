@@ -1,4 +1,4 @@
-"""Tool hint formatting for concise, human-readable tool call display."""
+"""工具提示格式化，用于简洁、人类可读的工具调用显示。"""
 
 from __future__ import annotations
 

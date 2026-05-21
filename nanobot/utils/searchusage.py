@@ -1,4 +1,4 @@
-"""Web search provider usage fetchers for /status command."""
+"""/status 命令的 Web 搜索提供商使用情况获取器。"""
 
 from __future__ import annotations
 

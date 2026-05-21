@@ -1,8 +1,7 @@
-"""Shared helpers for decoding ``data:...;base64,...`` URLs to disk.
+"""将 ``data:...;base64,...`` URL 解码到磁盘的共享助手。
 
-Historically lived in ``nanobot.api.server``; now shared by the WebSocket
-channel so the ``api`` + ``websocket`` ingress paths apply the same parsing,
-size guard, and filesystem layout.
+原本位于 ``nanobot.api.server``；现在由 WebSocket 通道共享，以便
+``api`` + ``websocket`` 入口路径应用相同的解析、大小保护和文件系统布局。
 """
 
 from __future__ import annotations

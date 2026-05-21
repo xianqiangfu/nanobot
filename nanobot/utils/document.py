@@ -1,4 +1,4 @@
-"""Document text extraction utilities for nanobot."""
+"""nanobot 的文档文本提取工具。"""
 
 import mimetypes
 from pathlib import Path

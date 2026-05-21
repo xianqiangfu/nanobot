@@ -1,4 +1,4 @@
-"""Runtime-specific helper functions and constants."""
+"""运行时特定的助手函数和常量。"""
 
 from __future__ import annotations
 
