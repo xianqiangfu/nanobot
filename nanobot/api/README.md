@@ -1,24 +1,24 @@
-# API 服务
+# API Service
 
-本模块提供 OpenAI 兼容的 HTTP API 服务器，用于固定的 nanobot 会话。
+This module provides an OpenAI-compatible HTTP API server for persistent nanobot sessions.
 
-## 核心功能
+## Core Features
 
-### 端点
+### Endpoints
 
-- `POST /v1/chat/completions` - OpenAI 兼容的聊天完成端点
-- `GET /v1/models` - 列出可用模型
+- `POST /v1/chat/completions` - OpenAI-compatible chat completions endpoint
+- `GET /v1/models` - List available models
 
-### 会话管理
+### Session Management
 
-所有请求路由到单个持久化的 API 会话：
+All requests route to a single persistent API session:
 
-- 会话键：`api:default`
-- 聊天 ID：`default`
+- Session key: `api:default`
+- Chat ID: `default`
 
-## 使用示例
+## Usage Examples
 
-### 聊天完成
+### Chat Completions
 
 ```bash
 curl -X POST http://localhost:8765/api/v1/chat/completions \
@@ -31,13 +31,13 @@ curl -X POST http://localhost:8765/api/v1/chat/completions \
   }'
 ```
 
-### 列出模型
+### List Models
 
 ```bash
 curl http://localhost:8765/api/v1/models
 ```
 
-### 文件上传
+### File Upload
 
 ```bash
 curl -X POST http://localhost:8765/api/v1/chat/completions \
@@ -61,22 +61,22 @@ curl -X POST http://localhost:8765/api/v1/chat/completions \
   }'
 ```
 
-## 配置
+## Configuration
 
-### 端口
+### Port
 
-API 服务默认在端口 8765 上运行。
+The API service runs on port 8765 by default.
 
-### 会话配置
+### Session Configuration
 
-API 会话使用与 nanobot 配置相同的设置：
-- 提供商配置
-- 工具配置
-- 智能体配置
+API sessions use the same settings as nanobot configuration:
+- Provider configuration
+- Tool configuration
+- Agent configuration
 
-## 响应格式
+## Response Format
 
-### 成功响应
+### Success Response
 
 ```json
 {
@@ -102,7 +102,7 @@ API 会话使用与 nanobot 配置相同的设置：
 }
 ```
 
-### 错误响应
+### Error Response
 
 ```json
 {
@@ -114,9 +114,9 @@ API 会话使用与 nanobot 配置相同的设置：
 }
 ```
 
-## 注意事项
+## Notes
 
-- 所有请求异步处理
-- 支持流式响应
-- 文件大小限制：MAX_FILE_SIZE
-- 文件存储在媒体目录中
+- All requests are processed asynchronously
+- Streaming responses are supported
+- File size limit: MAX_FILE_SIZE
+- Files are stored in the media directory
