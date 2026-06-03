@@ -1,4 +1,4 @@
-"""Configuration loading utilities."""
+"""配置加载工具。"""
 
 import json
 import os

@@ -1,4 +1,4 @@
-"""Configuration schema using Pydantic."""
+"""使用 Pydantic 的配置模式。"""
 from __future__ import annotations
 
 from pathlib import Path

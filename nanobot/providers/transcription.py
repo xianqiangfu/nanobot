@@ -1,4 +1,4 @@
-"""Voice transcription providers (Groq and OpenAI Whisper)."""
+"""语音转录提供商（Groq 和 OpenAI Whisper）。"""
 
 import asyncio
 import os

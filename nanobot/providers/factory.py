@@ -1,4 +1,4 @@
-"""Create LLM providers from config."""
+"""从配置创建 LLM 提供商。"""
 
 from __future__ import annotations
 

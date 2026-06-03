@@ -1,4 +1,4 @@
-"""LLM provider abstraction module."""
+"""LLM 提供商抽象模块。"""
 
 from __future__ import annotations
 

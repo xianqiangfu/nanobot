@@ -1,4 +1,4 @@
-"""Convert Chat Completions messages/tools to Responses API format."""
+"""将 Chat Completions 消息/工具转换为 Responses API 格式。"""
 
 from __future__ import annotations
 
