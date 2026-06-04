@@ -1,4 +1,17 @@
-"""Shared lifecycle hook primitives for agent runs."""
+"""Shared lifecycle hook primitives for agent runs.
+
+共享生命周期钩子原语，用于 agent 运行。
+
+钩子允许在 agent 运行的各个生命周期事件中插入自定义逻辑：
+- before_iteration: 迭代开始前
+- on_stream: 流式输出时
+- on_stream_end: 流式输出结束
+- before_execute_tools: 工具执行前
+- emit_reasoning: 发送推理内容
+- emit_reasoning_end: 推理内容结束
+- after_iteration: 迭代结束后
+- finalize_content: 最终化内容
+"""
 
 from __future__ import annotations
 
@@ -12,24 +25,30 @@ from nanobot.providers.base import LLMResponse, ToolCallRequest
 
 @dataclass(slots=True)
 class AgentHookContext:
-    """Mutable per-iteration state exposed to runner hooks."""
+    """每次迭代的可变状态，暴露给 runner 钩子。
 
-    iteration: int
-    messages: list[dict[str, Any]]
-    response: LLMResponse | None = None
-    usage: dict[str, int] = field(default_factory=dict)
-    tool_calls: list[ToolCallRequest] = field(default_factory=list)
-    tool_results: list[Any] = field(default_factory=list)
-    tool_events: list[dict[str, str]] = field(default_factory=list)
-    streamed_content: bool = False
-    streamed_reasoning: bool = False
-    final_content: str | None = None
-    stop_reason: str | None = None
-    error: str | None = None
+    包含当前迭代的所有状态信息，允许钩子读取和修改。
+    """
+
+    iteration: int                              # 当前迭代次数
+    messages: list[dict[str, Any]]             # 消息历史
+    response: LLMResponse | None = None         # LLM 响应
+    usage: dict[str, int] = field(default_factory=dict)  # token 使用统计
+    tool_calls: list[ToolCallRequest] = field(default_factory=list)  # 工具调用请求
+    tool_results: list[Any] = field(default_factory=list)  # 工具执行结果
+    tool_events: list[dict[str, str]] = field(default_factory=list)  # 工具事件
+    streamed_content: bool = False              # 是否已流式输出内容
+    streamed_reasoning: bool = False            # 是否已流式输出推理
+    final_content: str | None = None           # 最终内容
+    stop_reason: str | None = None             # 停止原因
+    error: str | None = None                   # 错误信息
 
 
 class AgentHook:
-    """Minimal lifecycle surface for shared runner customization."""
+    """最小生命周期接口，用于共享 runner 自定义。
+
+    默认实现为空，子类可以覆盖需要的方法。
+    """
 
     def __init__(self, reraise: bool = False) -> None:
         self._reraise = reraise
@@ -68,11 +87,12 @@ class AgentHook:
 
 
 class CompositeHook(AgentHook):
-    """Fan-out hook that delegates to an ordered list of hooks.
+    """扇出钩子，将调用委托给有序的钩子列表。
 
-    Error isolation: async methods catch and log per-hook exceptions
-    so a faulty custom hook cannot crash the agent loop.
-    ``finalize_content`` is a pipeline (no isolation — bugs should surface).
+    错误隔离：
+    - 异步方法会捕获并记录每个钩子的异常
+    - 确保一个有故障的自定义钩子不会导致 agent 循环崩溃
+    - finalize_content 是管道模式（无隔离，bug 应该暴露）
     """
 
     __slots__ = ("_hooks",)
@@ -123,11 +143,12 @@ class CompositeHook(AgentHook):
 
 
 class SDKCaptureHook(AgentHook):
-    """Record tool names and the final message list for ``RunResult``.
+    """记录工具名称和最终消息列表用于 ``RunResult``。
 
-    The runner mutates ``context.messages`` in place across iterations, so the
-    snapshot is refreshed on every ``after_iteration`` call; the last call
-    reflects the end-of-turn state the SDK caller cares about.
+    注意：
+    - runner 会就地修改 ``context.messages``
+    - 每次调用 ``after_iteration`` 时会刷新快照
+    - 最后一次调用反映了 SDK 调用者关心的轮次结束状态
     """
 
     def __init__(self) -> None:

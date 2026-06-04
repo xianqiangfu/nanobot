@@ -1,4 +1,12 @@
-"""Agent loop: the core processing engine."""
+"""Agent loop: the core processing engine.
+
+Agent 循环是 nanobot 的核心处理引擎，负责：
+1. 从消息总线接收入站消息
+2. 构建上下文（历史记录、记忆、技能）
+3. 调用 LLM 提供商
+4. 执行工具调用
+5. 发送响应回消息总线
+"""
 
 from __future__ import annotations
 
@@ -50,18 +58,24 @@ if TYPE_CHECKING:
     from nanobot.cron.service import CronService
 
 
-UNIFIED_SESSION_KEY = "unified:default"
+UNIFIED_SESSION_KEY = "unified:default"  # 统一会话键，用于 unified_session 模式
 
 
 class TurnState(Enum):
-    RESTORE = auto()
-    COMPACT = auto()
-    COMMAND = auto()
-    BUILD = auto()
-    RUN = auto()
-    SAVE = auto()
-    RESPOND = auto()
-    DONE = auto()
+    """轮次状态机的状态枚举。
+
+    状态转换流程：
+    RESTORE -> COMPACT -> COMMAND -> BUILD -> RUN -> SAVE -> RESPOND -> DONE
+    或通过 COMMAND 状态直接跳转到 DONE（快捷命令）
+    """
+    RESTORE = auto()   # 恢复检查点/待处理用户轮次
+    COMPACT = auto()   # 自动压缩空闲会话
+    COMMAND = auto()   # 检查并执行命令
+    BUILD = auto()     # 构建初始消息和上下文
+    RUN = auto()       # 运行 agent 循环（LLM 调用 + 工具执行）
+    SAVE = auto()      # 保存轮次结果到会话
+    RESPOND = auto()   # 组装并发布出站消息
+    DONE = auto()      # 轮次完成
 
 
 @dataclass
@@ -75,6 +89,10 @@ class StateTraceEntry:
 
 @dataclass
 class TurnContext:
+    """单次消息处理的上下文。
+
+    包含处理过程中所需的所有状态信息，通过状态机在各处理器间传递。
+    """
     msg: InboundMessage
     session_key: str
     state: TurnState
@@ -109,14 +127,21 @@ class TurnContext:
 
 class AgentLoop:
     """
-    The agent loop is the core processing engine.
+    Agent 循环是 nanobot 的核心处理引擎。
 
-    It:
-    1. Receives messages from the bus
-    2. Builds context with history, memory, skills
-    3. Calls the LLM
-    4. Executes tool calls
-    5. Sends responses back
+    职责：
+    1. 从消息总线接收入站消息
+    2. 构建上下文（历史记录、记忆、技能）
+    3. 调用 LLM 提供商
+    4. 执行工具调用
+    5. 发送响应回消息总线
+
+    关键特性：
+    - 支持会话级别的消息并发控制
+    - 支持轮次中注入（follow-up 消息在当前轮次中处理）
+    - 支持统一会话模式（所有会话共享同一个会话键）
+    - 支持运行时模型切换（model preset）
+    - 支持检查点恢复（中断后可恢复）
     """
 
     @property
@@ -300,11 +325,17 @@ class AgentLoop:
         bus: MessageBus | None = None,
         **extra: Any,
     ) -> AgentLoop:
-        """Create an AgentLoop from config with the common parameter set.
+        """从配置创建 AgentLoop 实例。
 
-        Extra keyword arguments are forwarded to ``AgentLoop.__init__``,
-        allowing callers to override or extend the standard config-derived
-        parameters (e.g. ``cron_service``, ``session_manager``).
+        Args:
+            config: nanobot 配置对象
+            bus: 可选的消息总线实例
+            **extra: 额外的关键字参数，会转发到 AgentLoop.__init__
+                  允许调用者覆盖或扩展标准配置派生的参数
+                  （如 ``cron_service``、``session_manager``）
+
+        Returns:
+            配置好的 AgentLoop 实例
         """
         from nanobot.providers.factory import make_provider
 
@@ -791,7 +822,16 @@ class AgentLoop:
         return result.final_content, result.tools_used, result.messages, result.stop_reason, result.had_injections
 
     async def run(self) -> None:
-        """Run the agent loop, dispatching messages as tasks to stay responsive to /stop."""
+        """运行 agent 循环主函数。
+
+        持续从消息总线消费入站消息，并为每条消息派发异步任务。
+        使用任务并发控制和会话锁确保：
+        - 每个会话的请求按顺序处理
+        - 不同会话的请求可以并发处理
+        - /stop 命令可以中断正在运行的任务
+
+        每轮超时 1 秒用于自动压缩空闲会话。
+        """
         self._running = True
         await self._connect_mcp()
         logger.info("Agent loop started")
@@ -866,7 +906,23 @@ class AgentLoop:
             )
 
     async def _dispatch(self, msg: InboundMessage) -> None:
-        """Process a message: per-session serial, cross-session concurrent."""
+        """处理单条入站消息。
+
+        特性：
+        - 会话级别串行：同一会话的消息按顺序处理
+        - 会话间并发：不同会话的消息可以并发处理
+        - 中途注入：支持在当前轮次中注入后续消息（follow-up）
+        - 流式输出：根据消息元数据决定是否流式输出
+        - 检查点恢复：任务被取消时保留部分上下文
+
+        处理流程：
+        1. 获取会话锁和并发门限
+        2. 注册待处理队列用于中途注入
+        3. 根据元数据设置流式输出回调
+        4. 调用 _process_message 处理消息
+        5. 发布出站响应消息
+        6. 重新发布待处理队列中的剩余消息
+        """
         session_key = self._effective_session_key(msg)
         if session_key != msg.session_key:
             msg = dataclasses.replace(msg, session_key_override=session_key)

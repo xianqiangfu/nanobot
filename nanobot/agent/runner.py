@@ -1,4 +1,15 @@
-"""Shared execution loop for tool-using agents."""
+"""Shared execution loop for tool-using agents.
+
+共享执行循环，用于支持工具使用的 agent。
+
+核心功能：
+- 执行 LLM 对话循环（支持多轮工具调用）
+- 管理流式输出和进度更新
+- 处理工具执行的并发和错误
+- 管理上下文（历史记录压缩、截断）
+- 支持中途注入（follow-up 消息）
+- SSRF 和工作空间安全边界检查
+"""
 
 from __future__ import annotations
 
@@ -56,13 +67,16 @@ _BACKFILL_CONTENT = "[Tool result unavailable — call was interrupted or lost]"
 
 @dataclass(slots=True)
 class AgentRunSpec:
-    """Configuration for a single agent execution."""
+    """单次 agent 执行的配置。
 
-    initial_messages: list[dict[str, Any]]
-    tools: ToolRegistry
-    model: str
-    max_iterations: int
-    max_tool_result_chars: int
+    包含执行过程中所需的所有配置参数。
+    """
+
+    initial_messages: list[dict[str, Any]]  # 初始消息列表
+    tools: ToolRegistry                    # 可用工具注册表
+    model: str                              # 使用的模型
+    max_iterations: int                     # 最大迭代次数（工具调用）
+    max_tool_result_chars: int              # 工具结果最大字符数
     temperature: float | None = None
     max_tokens: int | None = None
     reasoning_effort: str | None = None
@@ -86,20 +100,33 @@ class AgentRunSpec:
 
 @dataclass(slots=True)
 class AgentRunResult:
-    """Outcome of a shared agent execution."""
+    """共享 agent 执行的结果。
 
-    final_content: str | None
-    messages: list[dict[str, Any]]
-    tools_used: list[str] = field(default_factory=list)
-    usage: dict[str, int] = field(default_factory=dict)
-    stop_reason: str = "completed"
+    包含执行过程中的所有输出信息和状态。
+    """
+
+    final_content: str | None                  # 最终响应内容
+    messages: list[dict[str, Any]]            # 完整的消息历史
+    tools_used: list[str] = field(default_factory=list)  # 使用的工具列表
+    usage: dict[str, int] = field(default_factory=dict)  # token 使用统计
+    stop_reason: str = "completed"            # 停止原因
     error: str | None = None
     tool_events: list[dict[str, str]] = field(default_factory=list)
     had_injections: bool = False
 
 
 class AgentRunner:
-    """Run a tool-capable LLM loop without product-layer concerns."""
+    """运行支持工具的 LLM 循环（不涉及产品层关注点）。
+
+    职责：
+    - 执行 LLM 调用循环（支持多轮工具调用）
+    - 管理流式输出和推理内容
+    - 执行工具调用（支持并发）
+    - 管理上下文（历史记录压缩、截断、工具结果预算）
+    - 处理中途注入（follow-up 消息）
+    - SSRF 和工作空间安全边界检查
+    - 错误恢复和重试逻辑
+    """
 
     def __init__(self, provider: LLMProvider):
         self.provider = provider
@@ -233,6 +260,20 @@ class AgentRunner:
         return injected_messages
 
     async def run(self, spec: AgentRunSpec) -> AgentRunResult:
+        """执行 agent 对话循环。
+
+        处理流程：
+        1. 上下文治理：清理孤立工具结果、回填缺失结果、微压缩、应用预算、截断历史
+        2. LLM 调用：调用 LLM 获取响应
+        3. 流式处理：处理流式输出和推理内容
+        4. 工具执行：执行 LLM 请求的工具调用（支持并发）
+        5. 检查点：保存当前状态用于中断恢复
+        6. 中途注入：处理后续消息的注入
+        7. 完成判断：处理空响应、长度截断、错误等情况
+
+        Returns:
+            AgentRunResult 包含最终内容、消息历史、工具使用等信息
+        """
         hook = spec.hook or AgentHook()
         messages = list(spec.initial_messages)
         final_content: str | None = None

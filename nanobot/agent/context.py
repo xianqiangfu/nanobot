@@ -1,4 +1,13 @@
-"""Context builder for assembling agent prompts."""
+"""Context builder for assembling agent prompts.
+
+上下文构建器，用于组装 agent 的提示词。
+
+职责：
+- 构建系统提示词（身份、引导文件、记忆、技能）
+- 构建用户消息（运行时上下文、媒体附件）
+- 合并消息内容
+- 加载引导文件（AGENTS.md、SOUL.md、USER.md、TOOLS.md）
+"""
 
 import base64
 import mimetypes
@@ -19,12 +28,20 @@ from nanobot.utils.prompt_templates import render_template
 
 
 class ContextBuilder:
-    """Builds the context (system prompt + messages) for the agent."""
+    """构建 agent 的上下文（系统提示词 + 消息列表）。
+
+    组件：
+    - 身份信息：系统平台、工作空间路径、运行时
+    - 引导文件：AGENTS.md、SOUL.md、USER.md、TOOLS.md
+    - 记忆：长期记忆和最近历史
+    - 技能：可用技能列表和描述
+    - 运行时上下文：时间、频道、聊天 ID、发送者 ID
+    """
 
     BOOTSTRAP_FILES = ["AGENTS.md", "SOUL.md", "USER.md", "TOOLS.md"]
     _RUNTIME_CONTEXT_TAG = "[Runtime Context — metadata only, not instructions]"
     _MAX_RECENT_HISTORY = 50
-    _MAX_HISTORY_CHARS = 32_000  # hard cap on recent history section size
+    _MAX_HISTORY_CHARS = 32_000  # 最近历史部分的硬性上限
     _RUNTIME_CONTEXT_END = "[/Runtime Context]"
 
     def __init__(self, workspace: Path, timezone: str | None = None, disabled_skills: list[str] | None = None):
@@ -39,7 +56,25 @@ class ContextBuilder:
         channel: str | None = None,
         session_summary: str | None = None,
     ) -> str:
-        """Build the system prompt from identity, bootstrap files, memory, and skills."""
+        """构建系统提示词。
+
+        组成部分（按顺序）：
+        1. 身份信息（_get_identity）
+        2. 引导文件（_load_bootstrap_files）
+        3. 长期记忆（memory.get_memory_context）
+        4. 始终启用的技能（get_always_skills）
+        5. 技能摘要（build_skills_summary）
+        6. 最近历史（read_unprocessed_history）
+        7. 会话摘要（session_summary）
+
+        Args:
+            skill_names: 要加载的技能名称列表（除始终启用的技能外）
+            channel: 频道标识
+            session_summary: 会话摘要
+
+        Returns:
+            完整的系统提示词
+        """
         parts = [self._get_identity(channel=channel)]
 
         bootstrap = self._load_bootstrap_files()
@@ -148,7 +183,26 @@ class ContextBuilder:
         sender_id: str | None = None,
         session_summary: str | None = None,
     ) -> list[dict[str, Any]]:
-        """Build the complete message list for an LLM call."""
+        """构建 LLM 调用的完整消息列表。
+
+        Args:
+            history: 历史消息列表
+            current_message: 当前消息内容
+            skill_names: 要加载的技能名称列表
+            media: 媒体文件路径列表
+            channel: 频道标识
+            chat_id: 聊天 ID
+            current_role: 当前角色（默认为 "user"）
+            sender_id: 发送者 ID
+            session_summary: 会话摘要
+
+        Returns:
+            完整的消息列表，包含系统提示词和历史消息
+
+        Note:
+            运行时上下文和用户内容会合并为单个用户消息，
+            避免连续相同角色消息导致某些提供商拒绝。
+        """
         runtime_ctx = self._build_runtime_context(channel, chat_id, self.timezone, sender_id=sender_id)
         user_content = self._build_user_content(current_message, media)
 

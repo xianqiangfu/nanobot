@@ -1,4 +1,14 @@
-"""Skills loader for agent capabilities."""
+"""Skills loader for agent capabilities.
+
+Agent 技能加载器。
+
+功能：
+- 从工作空间和内置目录加载技能
+- 解析技能元数据（frontmatter）
+- 检查技能依赖（CLI 工具、环境变量）
+- 构建技能摘要用于渐进式加载
+- 管理始终启用的技能
+"""
 
 import json
 import os
@@ -20,10 +30,16 @@ _STRIP_SKILL_FRONTMATTER = re.compile(
 
 class SkillsLoader:
     """
-    Loader for agent skills.
+    Agent 技能加载器。
 
-    Skills are markdown files (SKILL.md) that teach the agent how to use
-    specific tools or perform certain tasks.
+    技能是 markdown 文件（SKILL.md），教 agent 如何使用特定工具或执行特定任务。
+
+    功能：
+    - 从工作空间和内置目录加载技能
+    - 解析 YAML frontmatter 获取元数据
+    - 检查技能依赖（CLI 工具、环境变量）
+    - 构建技能摘要用于渐进式加载
+    - 管理始终启用的技能（always=true）
     """
 
     def __init__(self, workspace: Path, builtin_skills_dir: Path | None = None, disabled_skills: set[str] | None = None):
