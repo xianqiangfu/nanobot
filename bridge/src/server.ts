@@ -1,6 +1,6 @@
 /**
- * WebSocket server for Python-Node.js bridge communication.
- * Security: binds to 127.0.0.1 only; requires BRIDGE_TOKEN auth; rejects browser Origin headers.
+ * 用于 Python-Node.js 桥接通信的 WebSocket 服务器。
+ * 安全性：仅绑定到 127.0.0.1；需要 BRIDGE_TOKEN 身份验证；拒绝浏览器 Origin 标头。
  */
 
 import { WebSocketServer, WebSocket } from 'ws';

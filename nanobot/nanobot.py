@@ -1,4 +1,4 @@
-"""High-level programmatic interface to nanobot."""
+"""nanobot 的高级编程接口。"""
 
 from __future__ import annotations
 
